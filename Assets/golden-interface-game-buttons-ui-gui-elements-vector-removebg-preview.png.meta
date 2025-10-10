@@ -1,0 +1,1310 @@
+fileFormatVersion: 2
+guid: c9b1c3200ffb9484cafe0dab2a194d6e
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 0
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_0
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 322
+        width: 135
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0192c8f6076bdeb428974667e2a27583
+      internalID: 855505684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_1
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 321
+        width: 45
+        height: 45
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d45d90a93a53ffb4caa08401f5e58684
+      internalID: -216893623
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_2
+      rect:
+        serializedVersion: 2
+        x: 221
+        y: 321
+        width: 46
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c3227e52b4823e489f5b9bdbb788166
+      internalID: -843342293
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_3
+      rect:
+        serializedVersion: 2
+        x: 298
+        y: 299
+        width: 71
+        height: 45
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 63de72ba5ddee5747b74238bd619c038
+      internalID: 1320237077
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_4
+      rect:
+        serializedVersion: 2
+        x: 362
+        y: 312
+        width: 52
+        height: 51
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 29783a2d6e06f5c4f8ccc712bfe36012
+      internalID: -1452927220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_5
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 312
+        width: 53
+        height: 51
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4379f2413eae08a41b72bc1e149114e8
+      internalID: 1559534307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_6
+      rect:
+        serializedVersion: 2
+        x: 492
+        y: 275
+        width: 138
+        height: 98
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 959ce0a8bfffc2d438de48f9e564f381
+      internalID: -1321945345
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_7
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 271
+        width: 42
+        height: 42
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f2911ce599269c042ac70135ff9f6bd4
+      internalID: 1173697199
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_8
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 271
+        width: 42
+        height: 42
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 515e9ae8f1e9b7d45ae0410056ea6712
+      internalID: 2130525842
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_9
+      rect:
+        serializedVersion: 2
+        x: 106
+        y: 271
+        width: 46
+        height: 42
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a17c284ecea12e4eb90496e52ee14ae
+      internalID: 594572885
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_10
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 274
+        width: 42
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c150f61de97f3b4a9d2b4704983e5a3
+      internalID: 1186092013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_11
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 273
+        width: 40
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 638efacd3cba25d4eaf11086b1782351
+      internalID: 2076903824
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_12
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 272
+        width: 65
+        height: 45
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e435a08e51e12924cbf6d2eaf5274bfa
+      internalID: -1415718496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_13
+      rect:
+        serializedVersion: 2
+        x: 346
+        y: 265
+        width: 35
+        height: 36
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f958631048236f54d9ffe59068497801
+      internalID: -630872520
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_14
+      rect:
+        serializedVersion: 2
+        x: 383
+        y: 265
+        width: 35
+        height: 36
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc175509b0a743b4a8208e04274a1dc5
+      internalID: 1584077832
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_15
+      rect:
+        serializedVersion: 2
+        x: 421
+        y: 265
+        width: 35
+        height: 36
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: da7f8cb62813b2247aefd1b1f4e89d40
+      internalID: -1133776633
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_16
+      rect:
+        serializedVersion: 2
+        x: 458
+        y: 265
+        width: 36
+        height: 36
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 333140d4854755246a4eaa8226bd076d
+      internalID: 562020867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_17
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 195
+        width: 135
+        height: 67
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4600a2bae49559446b3bb114578919e9
+      internalID: -255685215
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_18
+      rect:
+        serializedVersion: 2
+        x: 163
+        y: 194
+        width: 24
+        height: 67
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a77a746998c38084dac5f4e3b0310a4a
+      internalID: 1552475937
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_19
+      rect:
+        serializedVersion: 2
+        x: 206
+        y: 85
+        width: 120
+        height: 175
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7ee212b13fd597a43a222316b5ffe0a5
+      internalID: 1109695444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_20
+      rect:
+        serializedVersion: 2
+        x: 346
+        y: 228
+        width: 35
+        height: 35
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc591add4f5e743409d29b6cc3a19446
+      internalID: -800083613
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_21
+      rect:
+        serializedVersion: 2
+        x: 383
+        y: 228
+        width: 36
+        height: 35
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b143713d92e5d64b99b5b27d0f8e1fa
+      internalID: 2045045704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_22
+      rect:
+        serializedVersion: 2
+        x: 421
+        y: 228
+        width: 35
+        height: 35
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 144bd8e6f14c59146915a4ee34484a44
+      internalID: 292325711
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_23
+      rect:
+        serializedVersion: 2
+        x: 458
+        y: 228
+        width: 37
+        height: 35
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69c47af0898d3dc449143daa78da81cd
+      internalID: 1503091605
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_24
+      rect:
+        serializedVersion: 2
+        x: 498
+        y: 188
+        width: 67
+        height: 71
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 12fe11479f369964d9c01ae1073b7849
+      internalID: 719177845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_25
+      rect:
+        serializedVersion: 2
+        x: 572
+        y: 222
+        width: 64
+        height: 38
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7518ae89b51e37c4698cff97dd3ce47e
+      internalID: -2019603469
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_26
+      rect:
+        serializedVersion: 2
+        x: 346
+        y: 190
+        width: 36
+        height: 35
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ff2a1227db61a064099e7032748794a1
+      internalID: -1785294871
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_27
+      rect:
+        serializedVersion: 2
+        x: 383
+        y: 190
+        width: 36
+        height: 35
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 87f46949b8c5ba34ba731c19c3078393
+      internalID: -306693744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_28
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 190
+        width: 36
+        height: 35
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 27175a1878877ff48b7af76d8c38fbf2
+      internalID: -1128487723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_29
+      rect:
+        serializedVersion: 2
+        x: 458
+        y: 190
+        width: 37
+        height: 35
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d3c1400e7b77014fab8bfc061468c16
+      internalID: 1861502916
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_30
+      rect:
+        serializedVersion: 2
+        x: 561
+        y: 178
+        width: 35
+        height: 36
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a635bcaf03104f441a6a313d5e799e89
+      internalID: -1592117910
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_31
+      rect:
+        serializedVersion: 2
+        x: 602
+        y: 178
+        width: 35
+        height: 36
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f914d009ce9949642aa64b5e60640c4a
+      internalID: -612380773
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_32
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 152
+        width: 171
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b1f5de80b16974a43aeac0cd032ab8a0
+      internalID: -1408754725
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_33
+      rect:
+        serializedVersion: 2
+        x: 346
+        y: 152
+        width: 36
+        height: 36
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 628d348daead4c34483a1e4748304376
+      internalID: 1838029428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_34
+      rect:
+        serializedVersion: 2
+        x: 383
+        y: 152
+        width: 35
+        height: 35
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2860e8727ca3d9645a1cc45e8ca1cebc
+      internalID: -1083198684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_35
+      rect:
+        serializedVersion: 2
+        x: 421
+        y: 152
+        width: 35
+        height: 36
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 78cb0309dca192942b6ae58ca4785b59
+      internalID: -1301568906
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_36
+      rect:
+        serializedVersion: 2
+        x: 458
+        y: 152
+        width: 37
+        height: 36
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3c5f5566ea4fb4e4e963cbc788eff11c
+      internalID: -1470731225
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_37
+      rect:
+        serializedVersion: 2
+        x: 515
+        y: 133
+        width: 103
+        height: 38
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 42a2caa3f48b5fa418dc1c34e8917145
+      internalID: 978923976
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_38
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 119
+        width: 170
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64bfe4629f4ee124fac9b5e1f2311fdd
+      internalID: -1041292805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_39
+      rect:
+        serializedVersion: 2
+        x: 346
+        y: 115
+        width: 35
+        height: 35
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a6d60e02cfb9c14697f98ff2deb2e15
+      internalID: -767959250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_40
+      rect:
+        serializedVersion: 2
+        x: 383
+        y: 115
+        width: 35
+        height: 35
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: be4eb2d8111db804bbb47a788428f0e5
+      internalID: 1718552561
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_41
+      rect:
+        serializedVersion: 2
+        x: 421
+        y: 115
+        width: 35
+        height: 35
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 618043d088da1784bbfca2365e69b2a4
+      internalID: 33645444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_42
+      rect:
+        serializedVersion: 2
+        x: 458
+        y: 114
+        width: 36
+        height: 36
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a3ac90c62f94c6540a659114d100a641
+      internalID: -1455438787
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_43
+      rect:
+        serializedVersion: 2
+        x: 502
+        y: 15
+        width: 131
+        height: 111
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 53e6f07c122617f49b1d1f84b363d835
+      internalID: -1528870930
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_44
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 76
+        width: 59
+        height: 36
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f6827cc4169ee314cbd621530dba4b94
+      internalID: 1179190654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_45
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 77
+        width: 64
+        height: 34
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fecbce7590c740946aa7c5d1d9e6b33a
+      internalID: -1693004887
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_46
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 76
+        width: 23
+        height: 38
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf97cfa3827b80e4189c2772c084a50f
+      internalID: 952933533
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_47
+      rect:
+        serializedVersion: 2
+        x: 350
+        y: 10
+        width: 139
+        height: 97
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: beb9460506bac2649a61e9d9c2ac38d9
+      internalID: -844456498
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_48
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 22
+        width: 162
+        height: 38
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5c59b12994c96d47a47f4679beafc01
+      internalID: 592204184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_49
+      rect:
+        serializedVersion: 2
+        x: 197
+        y: 19
+        width: 137
+        height: 46
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 52998ac126d154f4b8a6fa15fcc0c1bd
+      internalID: 2044149235
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 511cb8e939266cd4396ac397cacbb343
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+      - key: SpriteEditor.SliceOnImport
+        value: False
+    nameFileIdTable:
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_0: 855505684
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_1: -216893623
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_10: 1186092013
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_11: 2076903824
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_12: -1415718496
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_13: -630872520
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_14: 1584077832
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_15: -1133776633
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_16: 562020867
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_17: -255685215
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_18: 1552475937
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_19: 1109695444
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_2: -843342293
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_20: -800083613
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_21: 2045045704
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_22: 292325711
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_23: 1503091605
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_24: 719177845
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_25: -2019603469
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_26: -1785294871
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_27: -306693744
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_28: -1128487723
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_29: 1861502916
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_3: 1320237077
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_30: -1592117910
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_31: -612380773
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_32: -1408754725
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_33: 1838029428
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_34: -1083198684
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_35: -1301568906
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_36: -1470731225
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_37: 978923976
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_38: -1041292805
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_39: -767959250
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_4: -1452927220
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_40: 1718552561
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_41: 33645444
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_42: -1455438787
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_43: -1528870930
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_44: 1179190654
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_45: -1693004887
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_46: 952933533
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_47: -844456498
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_48: 592204184
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_49: 2044149235
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_5: 1559534307
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_6: -1321945345
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_7: 1173697199
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_8: 2130525842
+      golden-interface-game-buttons-ui-gui-elements-vector-removebg-preview_9: 594572885
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
