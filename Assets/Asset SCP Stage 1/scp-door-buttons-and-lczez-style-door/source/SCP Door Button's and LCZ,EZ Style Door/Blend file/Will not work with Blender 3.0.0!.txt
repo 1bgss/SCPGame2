@@ -1,0 +1,1 @@
+Will not work with Blender 3.0.0 because it may result in missing textures!
