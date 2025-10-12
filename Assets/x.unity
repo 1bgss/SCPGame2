@@ -15,9 +15,9 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
   m_Fog: 0
-  m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  m_FogColor: {r: 0.1, g: 0.1, b: 0.1, a: 1}
   m_FogMode: 3
-  m_FogDensity: 0.01
+  m_FogDensity: 0.269
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
@@ -8795,8 +8795,8 @@ Transform:
   m_GameObject: {fileID: 1053784345}
   serializedVersion: 2
   m_LocalRotation: {x: 0.50000006, y: 0.50000006, z: -0.4999999, w: -0.5}
-  m_LocalPosition: {x: 0.054119844, y: 0.47635108, z: -0.37377074}
-  m_LocalScale: {x: 20.187586, y: 1.0771095, z: 34.055813}
+  m_LocalPosition: {x: 0.054119844, y: 0.47635108, z: -0.37191}
+  m_LocalScale: {x: 20.187586, y: 1.1040372, z: 34.055813}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 739540661}
@@ -13719,12 +13719,20 @@ PrefabInstance:
       value: Corridor Door 1
       objectReference: {fileID: 0}
     - target: {fileID: 8993622062687877331, guid: 0cb7f25189e83f34494cb3dbd4836e82, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 100.94
+      objectReference: {fileID: 0}
+    - target: {fileID: 8993622062687877331, guid: 0cb7f25189e83f34494cb3dbd4836e82, type: 3}
       propertyPath: m_LocalScale.z
       value: 99.98
       objectReference: {fileID: 0}
     - target: {fileID: 8993622062687877331, guid: 0cb7f25189e83f34494cb3dbd4836e82, type: 3}
       propertyPath: m_LocalPosition.y
       value: 5.6113
+      objectReference: {fileID: 0}
+    - target: {fileID: 8993622062687877331, guid: 0cb7f25189e83f34494cb3dbd4836e82, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.0571
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
