@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class DoubleDoorController : MonoBehaviour
+public class DoubleDoorController_EStandalone : MonoBehaviour
 {
     [Header("Engsel Kiri & Kanan")]
     public Transform engselKiri;
@@ -10,39 +10,48 @@ public class DoubleDoorController : MonoBehaviour
     public float openAngle = 90f;
     public float openSpeed = 3f;
     public float autoCloseDelay = 3f;
+    public float interactDistance = 3f;
+    public string playerTag = "Player";
 
     private bool isOpen = false;
     private bool isMoving = false;
     private float closeTimer;
+    private Transform player;
 
     private Quaternion leftClosedRot, rightClosedRot;
     private Quaternion leftOpenRot, rightOpenRot;
 
     void Start()
     {
+        GameObject playerObj = GameObject.FindGameObjectWithTag(playerTag);
+        if (playerObj != null)
+            player = playerObj.transform;
+
         leftClosedRot = engselKiri.localRotation;
         rightClosedRot = engselKanan.localRotation;
 
-        // arah buka realistis (kiri ke luar, kanan ke luar)
         leftOpenRot = leftClosedRot * Quaternion.Euler(0, -openAngle, 0);
         rightOpenRot = rightClosedRot * Quaternion.Euler(0, openAngle, 0);
     }
 
     void Update()
     {
-        // auto-close timer
-        if (isOpen && Time.time >= closeTimer)
+        if (player != null)
         {
-            CloseDoor();
+            float distance = Vector3.Distance(player.position, transform.position);
+            if (distance <= interactDistance && Input.GetKeyDown(KeyCode.E) && !isMoving)
+            {
+                ToggleDoor();
+            }
         }
+
+        if (isOpen && Time.time >= closeTimer)
+            CloseDoor();
 
         if (isMoving)
-        {
             MoveDoors();
-        }
     }
 
-    // dipanggil dari tombol atau player
     public void ToggleDoor()
     {
         if (isMoving) return;
@@ -51,15 +60,12 @@ public class DoubleDoorController : MonoBehaviour
         isMoving = true;
 
         if (isOpen)
-        {
             closeTimer = Time.time + autoCloseDelay;
-        }
     }
 
     public void OpenDoor()
     {
         if (isOpen || isMoving) return;
-
         isOpen = true;
         isMoving = true;
         closeTimer = Time.time + autoCloseDelay;
@@ -68,7 +74,6 @@ public class DoubleDoorController : MonoBehaviour
     public void CloseDoor()
     {
         if (!isOpen || isMoving) return;
-
         isOpen = false;
         isMoving = true;
     }
@@ -86,5 +91,11 @@ public class DoubleDoorController : MonoBehaviour
         {
             isMoving = false;
         }
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position, interactDistance);
     }
 }
