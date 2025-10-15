@@ -3,55 +3,53 @@ using UnityEngine;
 public class InventoryToggle : MonoBehaviour
 {
     public GameObject inventoryPanel;
-    public GameObject[] slotBorders; // isi 5 border slot di Inspector (urutan 1–5)
-    private int activeSlot = -1; // -1 artinya belum ada slot aktif
+    public GameObject[] slotBorders; // border slot 1–5
+    private int activeSlot = -1;
 
     void Start()
     {
         if (inventoryPanel != null)
             inventoryPanel.SetActive(true);
 
-        // Matikan semua border di awal
-        foreach (GameObject border in slotBorders)
-        {
+        foreach (var border in slotBorders)
             if (border != null)
                 border.SetActive(false);
-        }
     }
 
     void Update()
     {
-        // Cek tombol 1 sampai 5
         for (int i = 0; i < slotBorders.Length; i++)
         {
             if (Input.GetKeyDown(KeyCode.Alpha1 + i))
             {
-                ToggleSlot(i);
+                HandleSlotInput(i);
             }
         }
     }
 
-    void ToggleSlot(int index)
+    void HandleSlotInput(int index)
     {
-        // Kalau slot yang ditekan sama dengan yang aktif → matikan semuanya
-        if (activeSlot == index)
+        // cek double press
+        bool isDouble = InventoryManager.instance.IsDoublePress(index);
+
+        // kalau double press → lepas item
+        if (isDouble && activeSlot == index)
         {
             slotBorders[index].SetActive(false);
             activeSlot = -1;
+            InventoryManager.instance.SetActiveSlot(-1);
+            Debug.Log("Item dilepas dari slot " + (index + 1));
             return;
         }
 
-        // Matikan semua border dulu
+        // aktifkan border baru
         for (int i = 0; i < slotBorders.Length; i++)
         {
             if (slotBorders[i] != null)
-                slotBorders[i].SetActive(false);
+                slotBorders[i].SetActive(i == index);
         }
 
-        // Aktifkan slot yang ditekan
-        if (slotBorders[index] != null)
-            slotBorders[index].SetActive(true);
-
         activeSlot = index;
+        InventoryManager.instance.SetActiveSlot(index);
     }
 }
