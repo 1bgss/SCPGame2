@@ -11,9 +11,7 @@ public class InventoryToggle : MonoBehaviour
         if (inventoryPanel != null)
             inventoryPanel.SetActive(true);
 
-        foreach (var border in slotBorders)
-            if (border != null)
-                border.SetActive(false);
+        ClearHighlights();
     }
 
     void Update()
@@ -42,7 +40,14 @@ public class InventoryToggle : MonoBehaviour
             return;
         }
 
-        // aktifkan border baru
+        ForceHighlightSlot(index);
+    }
+
+    // ==================================================
+    // Fungsi tambahan dari kode sebelumnya
+    // ==================================================
+    public void ForceHighlightSlot(int index)
+    {
         for (int i = 0; i < slotBorders.Length; i++)
         {
             if (slotBorders[i] != null)
@@ -51,5 +56,16 @@ public class InventoryToggle : MonoBehaviour
 
         activeSlot = index;
         InventoryManager.instance.SetActiveSlot(index);
+        Debug.Log("📦 Slot " + (index + 1) + " dipaksa aktif (otomatis oleh item).");
+    }
+
+    public void ClearHighlights()
+    {
+        foreach (var border in slotBorders)
+            if (border != null)
+                border.SetActive(false);
+
+        activeSlot = -1;
+        InventoryManager.instance.SetActiveSlot(-1);
     }
 }
