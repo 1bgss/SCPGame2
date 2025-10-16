@@ -6,13 +6,13 @@ public class PotionRunningItem : MonoBehaviour
     public static PotionRunningItem instance;
 
     [Header("Referensi Potion")]
-    public GameObject playerPotionObject; // object muncul di tangan
-    public Sprite icon;                    
-    public int potionSlotIndex = 2;        
-    public float effectDuration = 3f;     
+    public GameObject playerPotionObject; // muncul di tangan player
+    public Sprite icon;
+    public int potionSlotIndex = 2;       // slot UI (slot 3 = index 2)
+    public float effectDuration = 3f;
 
     [Header("Debug")]
-    public bool autoUseForDebug = false;   
+    public bool autoUseForDebug = false;
 
     [HideInInspector] public bool isHeld = false;
 
@@ -21,12 +21,11 @@ public class PotionRunningItem : MonoBehaviour
 
     private Transform player;
     private Collider col;
-    private PlayerMovement playerMovement; // script movement
+    private PlayerMovement playerMovement;
 
     void Awake()
     {
         instance = this;
-
         col = GetComponent<Collider>();
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
         if (player != null)
@@ -41,40 +40,41 @@ public class PotionRunningItem : MonoBehaviour
         if (player == null) return;
         float distance = Vector3.Distance(player.position, transform.position);
 
-        // Ambil potion dengan E
+        // Ambil potion
         if (canTake && Input.GetKeyDown(KeyCode.E) && distance <= 2f && !isHeld)
             TakePotion();
 
-        // Gunakan potion dengan F jika slot aktif
+        // Gunakan potion saat slot aktif & F
         if (isHeld && InventoryManager.instance.activeSlot == potionSlotIndex && Input.GetKeyDown(KeyCode.F))
-            UsePotion();
+            CheckUseInput();
     }
 
     private void TakePotion()
     {
-        // Tambahkan ke inventory
         if (!InventoryManager.instance.AddItem(icon)) return;
 
         isHeld = true;
         if (col != null) col.enabled = false;
-        gameObject.SetActive(false);
+
+        // jangan nonaktifkan world object supaya coroutine bisa jalan
+        // gameObject.SetActive(false);
 
         Debug.Log("✅ Potion running diambil dan masuk inventory.");
 
         if (autoUseForDebug)
-            UsePotion();
+            CheckUseInput();
     }
 
-    public void UsePotion()
+    private void CheckUseInput()
     {
         if (!isHeld || isEffectActive || playerMovement == null) return;
 
         isEffectActive = true;
-
         if (playerPotionObject != null)
             playerPotionObject.SetActive(true);
 
-        StartCoroutine(ApplySpeedEffect());
+        // Jalankan coroutine dari player (selalu aktif)
+        playerMovement.StartCoroutine(ApplySpeedEffect());
     }
 
     private IEnumerator ApplySpeedEffect()
@@ -82,17 +82,19 @@ public class PotionRunningItem : MonoBehaviour
         float originalWalk = playerMovement.walkSpeed;
         float originalRun = playerMovement.runSpeed;
 
-        // Tambah kecepatan sementara
+        // Speed boost
         playerMovement.walkSpeed *= 2f;
         playerMovement.runSpeed *= 2f;
 
-        Debug.Log("💨 Potion running aktif!");
+        Debug.Log("⚡ Potion running aktif!");
 
         yield return new WaitForSeconds(effectDuration);
 
-        // Reset kecepatan
+        // Reset speed
         playerMovement.walkSpeed = originalWalk;
         playerMovement.runSpeed = originalRun;
+
+        Debug.Log("⚡ Potion running habis.");
 
         // Hapus dari inventory
         InventoryManager.instance.RemoveItem(icon);
@@ -103,8 +105,7 @@ public class PotionRunningItem : MonoBehaviour
         isHeld = false;
         isEffectActive = false;
 
-        Destroy(gameObject); // hapus object di dunia
-        Debug.Log("💔 Potion running habis.");
+        Destroy(gameObject);
     }
 
     private void OnTriggerEnter(Collider other)
