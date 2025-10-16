@@ -5,127 +5,107 @@ public class InventoryManager : MonoBehaviour
 {
     public static InventoryManager instance;
 
-    [Header("Inventory Slot Settings")]
-    public Image[] slotIcons;           // 5 slot icon dari UI
-    public Sprite emptySlotSprite;      // sprite kosong (drag di Inspector)
-    public int activeSlot = -1;         // slot aktif sekarang
+    [Header("Referensi Slot UI")]
+    public Image[] slotIcons; // Icon tiap slot
 
-    private bool[] isSlotEmpty;         // 🟢 penanda slot kosong/terisi
+    [HideInInspector] public int activeSlot = -1;
+
+    private Sprite[] storedItems;       // Data item (icon)
+    private float[] lastPressTimes;     // Untuk double click
     private float doublePressDelay = 0.3f;
-    private float[] lastPressTimes = new float[5];
 
     void Awake()
     {
-        instance = this;
-        isSlotEmpty = new bool[slotIcons.Length];
+        if (instance == null) instance = this;
+        else Destroy(gameObject);
 
-        // Awalnya semua slot dianggap kosong
-        for (int i = 0; i < isSlotEmpty.Length; i++)
-        {
-            isSlotEmpty[i] = true;
-            if (slotIcons[i] != null)
-                slotIcons[i].sprite = emptySlotSprite;
-        }
+        storedItems = new Sprite[slotIcons.Length];
+        lastPressTimes = new float[slotIcons.Length];
     }
 
-    // ======================
+    // =====================================================
     // Tambah item ke slot kosong
-    // ======================
-    public bool AddItem(Sprite itemIcon)
+    // =====================================================
+    public bool AddItem(Sprite icon)
     {
-        for (int i = 0; i < slotIcons.Length; i++)
+        for (int i = 0; i < storedItems.Length; i++)
         {
-            if (isSlotEmpty[i])
+            if (storedItems[i] == null)
             {
-                slotIcons[i].sprite = itemIcon;
-                isSlotEmpty[i] = false;
-                Debug.Log("✅ Item ditambahkan ke slot " + (i + 1));
-                return true; // sukses
+                storedItems[i] = icon;
+                slotIcons[i].sprite = icon;
+                slotIcons[i].enabled = true;
+                Debug.Log($"📦 Item ditambahkan ke slot {i+1}");
+                return true;
             }
         }
-
         Debug.Log("❌ Inventory penuh!");
-        return false; // gagal (semua slot penuh)
+        return false;
     }
 
-    // ======================
-    // Hapus item tertentu (misal saat dibuang)
-    // ======================
-    public void RemoveItem(Sprite itemIcon)
+    // =====================================================
+    // Hapus item
+    // =====================================================
+    public void RemoveItem(Sprite icon)
     {
-        for (int i = 0; i < slotIcons.Length; i++)
+        for (int i = 0; i < storedItems.Length; i++)
         {
-            // Cari item yang sesuai dan masih dianggap terisi
-            if (slotIcons[i].sprite == itemIcon && !isSlotEmpty[i])
+            if (storedItems[i] == icon)
             {
-                slotIcons[i].sprite = emptySlotSprite;
-                isSlotEmpty[i] = true;
-
-                // kalau slot ini sedang aktif, reset
-                if (activeSlot == i)
-                    SetActiveSlot(-1);
-
-                Debug.Log("🗑️ Item dihapus dari slot " + (i + 1));
+                storedItems[i] = null;
+                slotIcons[i].sprite = null;
+                slotIcons[i].enabled = false;
+                Debug.Log($"🗑️ Item dihapus dari slot {i+1}");
                 return;
             }
         }
     }
 
-    // ======================
-    // Ambil icon item dari slot aktif
-    // ======================
-    public Sprite GetActiveItem()
-    {
-        if (activeSlot >= 0 && activeSlot < slotIcons.Length)
-            return slotIcons[activeSlot].sprite;
-
-        return null;
-    }
-
-    // ======================
-    // Set slot aktif (dari tombol angka)
-    // ======================
+    // =====================================================
+    // Set slot aktif
+    // =====================================================
     public void SetActiveSlot(int index)
     {
         activeSlot = index;
-        Debug.Log(index == -1
-            ? "Tidak ada slot aktif"
-            : "🎯 Slot aktif: " + (index + 1));
     }
 
-    // ======================
-    // Double press handler (untuk toggle item aktif)
-    // ======================
+    // =====================================================
+    // Cek double click/press
+    // =====================================================
     public bool IsDoublePress(int index)
     {
-        if (Time.time - lastPressTimes[index] <= doublePressDelay)
+        float time = Time.time;
+        if (time - lastPressTimes[index] <= doublePressDelay)
         {
-            lastPressTimes[index] = 0f; // reset waktu
+            lastPressTimes[index] = 0f;
             return true;
         }
-
-        lastPressTimes[index] = Time.time;
+        lastPressTimes[index] = time;
         return false;
     }
 
-    // ======================
-    // Cek apakah slot aktif kosong
-    // ======================
-    public bool IsActiveSlotEmpty()
+    // =====================================================
+    // Dapatkan icon item di slot
+    // =====================================================
+    public Sprite GetItemAtSlot(int index)
     {
-        if (activeSlot < 0) return true;
-        return isSlotEmpty[activeSlot];
+        if (index >= 0 && index < storedItems.Length)
+            return storedItems[index];
+        return null;
     }
 
-    // ======================
-    // Utility tambahan (kalau nanti mau dicek dari luar)
-    // ======================
-    public bool IsInventoryFull()
+    // =====================================================
+    // Kosongkan semua slot
+    // =====================================================
+    public void ClearAllSlots()
     {
-        foreach (bool empty in isSlotEmpty)
+        for (int i = 0; i < storedItems.Length; i++)
         {
-            if (empty) return false; // masih ada slot kosong
+            storedItems[i] = null;
+            slotIcons[i].sprite = null;
+            slotIcons[i].enabled = false;
         }
-        return true; // semua penuh
+        activeSlot = -1;
+        Debug.Log("🧹 Semua slot dikosongkan");
     }
 }
