@@ -9,7 +9,7 @@ public class PotionItem : MonoBehaviour
     public GameObject playerPotionObject; // potion di tangan player (main)
     public Sprite icon;                    // icon untuk inventory
     public float pickupRange = 2f;
-    public int potionSlotIndex = 2;        // misal slot 3 (index 2)
+    public int potionSlotIndex = 2;        // slot 3 (index 2)
     public float effectDuration = 10f;     // durasi efek potion
 
     [Header("Debug / Optional")]
@@ -76,18 +76,25 @@ public class PotionItem : MonoBehaviour
         if (playerPotionObject != null)
             playerPotionObject.SetActive(true);
 
+        // mulai coroutine efek stamina unlimited
         StartCoroutine(ApplyStaminaEffect());
     }
 
     private IEnumerator ApplyStaminaEffect()
     {
         float originalMax = stamina.maxStamina;
-        stamina.maxStamina = 9999f; // unlimited
+        float originalDrain = stamina.staminaDrain;
+
+        // Stamina unlimited
+        stamina.maxStamina = 9999f;
+        stamina.staminaDrain = 0f; // stamina tidak berkurang
         Debug.Log("💚 Potion stamina aktif: unlimited 10 detik");
 
         yield return new WaitForSeconds(effectDuration);
 
+        // Reset stamina
         stamina.maxStamina = originalMax;
+        stamina.staminaDrain = originalDrain;
         Debug.Log("💔 Potion stamina habis");
 
         // hapus potion dari inventory + hide main potion
@@ -100,7 +107,7 @@ public class PotionItem : MonoBehaviour
         isHeld = false;
         isEffectActive = false;
 
-        Destroy(gameObject); // optional, hilangkan world object
+        Destroy(gameObject); // hilangkan world object
     }
 
     private void OnTriggerEnter(Collider other)
