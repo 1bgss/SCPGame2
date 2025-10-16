@@ -6,7 +6,7 @@ public class PotionItem : MonoBehaviour
     public static PotionItem instance;
 
     [Header("Referensi Potion")]
-    public GameObject playerPotionObject; // potion di tangan player
+    public GameObject playerPotionObject; // model potion di tangan player
     public Sprite icon;                    // icon untuk inventory
     public float pickupRange = 2f;
     public float effectDuration = 8f;      // durasi efek potion (detik)
@@ -54,7 +54,8 @@ public class PotionItem : MonoBehaviour
 
     private void TakePotion()
     {
-        if (!InventoryManager.instance.AddItem(icon)) return;
+        // ✅ Tambahkan potion ke inventory dengan reference object
+        if (!InventoryManager.instance.AddItem(icon, this)) return;
 
         isHeld = true;
         if (col != null) col.enabled = false;

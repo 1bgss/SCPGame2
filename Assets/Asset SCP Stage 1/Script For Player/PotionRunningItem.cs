@@ -54,7 +54,8 @@ public class PotionRunningItem : MonoBehaviour
 
     private void TakePotion()
     {
-        if (!InventoryManager.instance.AddItem(icon)) return;
+        // ✅ Kirim 'this' supaya reference object tersimpan di InventoryManager
+        if (!InventoryManager.instance.AddItem(icon, this)) return;
 
         isHeld = true;
         if (col != null) col.enabled = false;

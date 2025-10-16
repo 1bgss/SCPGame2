@@ -78,7 +78,8 @@ public class FlashlightItem : MonoBehaviour
     // =====================================================
     private void TakeFlashlight()
     {
-        bool added = InventoryManager.instance.AddItem(icon);
+        // ✅ Kirim reference object 'this' supaya inventory simpan objek
+        bool added = InventoryManager.instance.AddItem(icon, this);
         if (!added)
         {
             Debug.Log("❌ Inventory penuh!");
@@ -204,4 +205,3 @@ public class FlashlightItem : MonoBehaviour
             UnequipFlashlight();
     }
 }
-

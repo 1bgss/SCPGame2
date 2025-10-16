@@ -93,9 +93,9 @@ public class InventoryToggle : MonoBehaviour
             else if (item == PotionItem.instance?.icon)
                 PotionItem.instance?.playerPotionObject?.SetActive(true);
             else if (item == PotionRunningItem.instance?.icon)
-                PotionRunningItem.instance?.playerPotionObject?.SetActive(true);
-            else if (item == PotionMain.instance?.playerPotionObject != null)
-                PotionMain.instance?.playerPotionObject?.SetActive(true);
+                PotionRunningItem.instance?.playerPotionObject?.SetActive(true); // Speed Potion
+            else if (item == StaminaPotionItem.instance?.icon)
+                StaminaPotionItem.instance?.playerPotionObject?.SetActive(true); // Stamina Potion
         }
 
         Debug.Log("📦 Slot " + (index + 1) + " aktif.");
@@ -104,12 +104,15 @@ public class InventoryToggle : MonoBehaviour
     void HideAllMainObjects()
     {
         FlashlightItem.instance?.UnequipFlashlight();
+
         if (PotionItem.instance?.playerPotionObject != null)
             PotionItem.instance.playerPotionObject.SetActive(false);
+
         if (PotionRunningItem.instance?.playerPotionObject != null)
-            PotionRunningItem.instance.playerPotionObject.SetActive(false);
-        if (PotionMain.instance?.playerPotionObject != null)
-            PotionMain.instance.playerPotionObject.SetActive(false);
+            PotionRunningItem.instance.playerPotionObject.SetActive(false); // Speed Potion
+
+        if (StaminaPotionItem.instance?.playerPotionObject != null)
+            StaminaPotionItem.instance.playerPotionObject.SetActive(false); // Stamina Potion
     }
 
     public void ClearHighlights()

@@ -52,7 +52,8 @@ public class StaminaPotionItem : MonoBehaviour
 
     private void TakePotion()
     {
-        if (!InventoryManager.instance.AddItem(icon)) return;
+        // ✅ Perubahan utama: kirim 'this' supaya reference object tersimpan
+        if (!InventoryManager.instance.AddItem(icon, this)) return;
 
         isHeld = true;
         if (col != null) col.enabled = false;
