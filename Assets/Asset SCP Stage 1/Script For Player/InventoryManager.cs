@@ -1,17 +1,17 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class InventoryManager : MonoBehaviour
 {
     public static InventoryManager instance;
 
     [Header("Referensi Slot UI")]
-    public Image[] slotIcons; // Icon tiap slot
+    public Image[] slotIcons; // icon tiap slot
+    public int activeSlot = -1;
 
-    [HideInInspector] public int activeSlot = -1;
-
-    private Sprite[] storedItems;       // Data item (icon)
-    private float[] lastPressTimes;     // Untuk double click
+    private Sprite[] storedItems;
+    private float[] lastPressTimes;
     private float doublePressDelay = 0.3f;
 
     void Awake()
@@ -23,9 +23,7 @@ public class InventoryManager : MonoBehaviour
         lastPressTimes = new float[slotIcons.Length];
     }
 
-    // =====================================================
     // Tambah item ke slot kosong
-    // =====================================================
     public bool AddItem(Sprite icon)
     {
         for (int i = 0; i < storedItems.Length; i++)
@@ -35,7 +33,7 @@ public class InventoryManager : MonoBehaviour
                 storedItems[i] = icon;
                 slotIcons[i].sprite = icon;
                 slotIcons[i].enabled = true;
-                Debug.Log($"📦 Item ditambahkan ke slot {i+1}");
+                Debug.Log($"📦 Item ditambahkan ke slot {i + 1}");
                 return true;
             }
         }
@@ -43,9 +41,7 @@ public class InventoryManager : MonoBehaviour
         return false;
     }
 
-    // =====================================================
     // Hapus item
-    // =====================================================
     public void RemoveItem(Sprite icon)
     {
         for (int i = 0; i < storedItems.Length; i++)
@@ -55,23 +51,19 @@ public class InventoryManager : MonoBehaviour
                 storedItems[i] = null;
                 slotIcons[i].sprite = null;
                 slotIcons[i].enabled = false;
-                Debug.Log($"🗑️ Item dihapus dari slot {i+1}");
+                Debug.Log($"🗑️ Item dihapus dari slot {i + 1}");
                 return;
             }
         }
     }
 
-    // =====================================================
     // Set slot aktif
-    // =====================================================
     public void SetActiveSlot(int index)
     {
         activeSlot = index;
     }
 
-    // =====================================================
-    // Cek double click/press
-    // =====================================================
+    // Cek klik ganda
     public bool IsDoublePress(int index)
     {
         float time = Time.time;
@@ -84,9 +76,6 @@ public class InventoryManager : MonoBehaviour
         return false;
     }
 
-    // =====================================================
-    // Dapatkan icon item di slot
-    // =====================================================
     public Sprite GetItemAtSlot(int index)
     {
         if (index >= 0 && index < storedItems.Length)
@@ -94,9 +83,6 @@ public class InventoryManager : MonoBehaviour
         return null;
     }
 
-    // =====================================================
-    // Kosongkan semua slot
-    // =====================================================
     public void ClearAllSlots()
     {
         for (int i = 0; i < storedItems.Length; i++)
@@ -106,6 +92,6 @@ public class InventoryManager : MonoBehaviour
             slotIcons[i].enabled = false;
         }
         activeSlot = -1;
-        Debug.Log("🧹 Semua slot dikosongkan");
+        Debug.Log("🧹 Semua slot dikosongkan.");
     }
 }
