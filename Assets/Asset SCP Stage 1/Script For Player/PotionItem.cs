@@ -72,10 +72,10 @@ public class PotionItem : MonoBehaviour
             playerPotionObject.SetActive(true);
 
         // Jalankan efek dari player supaya coroutine tidak terhenti
-        stamina.StartCoroutine(ApplyStaminaEffect());
+        stamina.StartCoroutine(ApplyStaminaEffect(slotIndex));
     }
 
-    private IEnumerator ApplyStaminaEffect()
+    private IEnumerator ApplyStaminaEffect(int slotIndex)
     {
         float originalMax = stamina.maxStamina;
         float originalDrain = stamina.staminaDrain;
@@ -92,8 +92,7 @@ public class PotionItem : MonoBehaviour
         stamina.staminaDrain = originalDrain;
         Debug.Log("💔 Efek potion habis, stamina kembali normal.");
 
-        // 🔻 Hapus dari inventory (langsung dari slot aktif)
-        int slotIndex = InventoryManager.instance.activeSlot;
+        // 🔻 Hapus dari inventory secara pasti
         InventoryManager.instance.ClearSlot(slotIndex);
         InventoryManager.instance.SetActiveSlot(-1);
 
@@ -104,7 +103,7 @@ public class PotionItem : MonoBehaviour
         isHeld = false;
         isEffectActive = false;
 
-        // Hancurkan setelah efek selesai
+        // Hancurkan object potion
         Destroy(gameObject);
     }
 
@@ -122,7 +121,7 @@ public class PotionItem : MonoBehaviour
 
     public void OnSlotDoubleClicked(int slotIndex)
     {
-        // Sembunyikan potion di tangan saat slot double click
+        // sembunyikan potion di tangan saat slot double click
         if (!isHeld) return;
         if (playerPotionObject != null)
             playerPotionObject.SetActive(false);

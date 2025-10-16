@@ -30,8 +30,11 @@ public class InventoryManager : MonoBehaviour
             if (storedItems[i] == null)
             {
                 storedItems[i] = icon;
-                slotIcons[i].sprite = icon;
-                slotIcons[i].enabled = true;
+                if (slotIcons[i] != null)
+                {
+                    slotIcons[i].sprite = icon;
+                    slotIcons[i].enabled = true;
+                }
                 Debug.Log($"📦 Item ditambahkan ke slot {i + 1}");
                 return true;
             }
@@ -40,7 +43,7 @@ public class InventoryManager : MonoBehaviour
         return false;
     }
 
-    // ✅ Hapus item (panggil ClearSlot agar konsisten)
+    // ✅ Hapus item (gunakan ClearSlot agar konsisten)
     public void RemoveItem(Sprite icon)
     {
         for (int i = 0; i < storedItems.Length; i++)
@@ -60,7 +63,7 @@ public class InventoryManager : MonoBehaviour
         Debug.Log($"🎯 Slot aktif sekarang: {index + 1}");
     }
 
-    // ✅ Cek klik ganda
+    // ✅ Cek klik ganda (double-press)
     public bool IsDoublePress(int index)
     {
         float time = Time.time;
@@ -86,22 +89,23 @@ public class InventoryManager : MonoBehaviour
     {
         for (int i = 0; i < storedItems.Length; i++)
         {
-            storedItems[i] = null;
-            slotIcons[i].sprite = null;
-            slotIcons[i].enabled = false;
+            ClearSlot(i);
         }
         activeSlot = -1;
         Debug.Log("🧹 Semua slot dikosongkan.");
     }
 
-    // ✅ Kosongkan satu slot tertentu
+    // ✅ Kosongkan satu slot tertentu (pasti hilang dari UI & internal)
     public void ClearSlot(int index)
     {
         if (index < 0 || index >= storedItems.Length) return;
 
         storedItems[index] = null;
-        slotIcons[index].sprite = null;
-        slotIcons[index].enabled = false;
+        if (slotIcons[index] != null)
+        {
+            slotIcons[index].sprite = null;
+            slotIcons[index].enabled = false;
+        }
         Debug.Log($"🗑️ Slot {index + 1} dikosongkan.");
     }
 }

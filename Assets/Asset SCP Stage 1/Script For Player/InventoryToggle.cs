@@ -91,9 +91,11 @@ public class InventoryToggle : MonoBehaviour
             if (item == FlashlightItem.instance?.icon)
                 FlashlightItem.instance?.EquipFlashlight();
             else if (item == PotionItem.instance?.icon)
-                PotionItem.instance?.playerPotionObject.SetActive(true);
+                PotionItem.instance?.playerPotionObject?.SetActive(true);
             else if (item == PotionRunningItem.instance?.icon)
-                PotionRunningItem.instance?.playerPotionObject.SetActive(true);
+                PotionRunningItem.instance?.playerPotionObject?.SetActive(true);
+            else if (item == PotionMain.instance?.playerPotionObject != null)
+                PotionMain.instance?.playerPotionObject?.SetActive(true);
         }
 
         Debug.Log("📦 Slot " + (index + 1) + " aktif.");
@@ -102,10 +104,12 @@ public class InventoryToggle : MonoBehaviour
     void HideAllMainObjects()
     {
         FlashlightItem.instance?.UnequipFlashlight();
-        if (PotionItem.instance != null)
+        if (PotionItem.instance?.playerPotionObject != null)
             PotionItem.instance.playerPotionObject.SetActive(false);
-        if (PotionRunningItem.instance != null)
+        if (PotionRunningItem.instance?.playerPotionObject != null)
             PotionRunningItem.instance.playerPotionObject.SetActive(false);
+        if (PotionMain.instance?.playerPotionObject != null)
+            PotionMain.instance.playerPotionObject.SetActive(false);
     }
 
     public void ClearHighlights()

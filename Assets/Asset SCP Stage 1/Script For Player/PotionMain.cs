@@ -3,19 +3,24 @@ using System.Collections;
 
 public class PotionMain : MonoBehaviour
 {
-    [Header("Referensi Player & Stamina")]
-    public PlayerStamina playerStamina;
-    public float effectDuration = 10f; // durasi stamina unlimited
-    private bool isActive = false;
+    public static PotionMain instance; // << ini wajib
 
-    // Referensi tambahan
-    public GameObject playerPotionObject; // object potion di tangan player
-    private bool isHeld = false;
+    public PlayerStamina playerStamina;
+    public GameObject playerPotionObject;
+    public Sprite icon;
+    public float effectDuration = 10f;
+
+    private bool isActive = false;
     private bool isEffectActive = false;
+
+    void Awake()
+    {
+        if (instance == null) instance = this;
+        else Destroy(gameObject);
+    }
 
     void Update()
     {
-        // Tekan F untuk minum potion
         if (Input.GetKeyDown(KeyCode.F) && !isActive)
         {
             UsePotion();
@@ -24,10 +29,14 @@ public class PotionMain : MonoBehaviour
 
     public void UsePotion()
     {
-        if (playerStamina == null) return;
+        if (playerStamina == null || isEffectActive) return;
 
         isActive = true;
         isEffectActive = true;
+
+        if (playerPotionObject != null)
+            playerPotionObject.SetActive(true);
+
         StartCoroutine(ApplyStaminaEffect());
     }
 
@@ -36,31 +45,29 @@ public class PotionMain : MonoBehaviour
         float originalMax = playerStamina.maxStamina;
         float originalDrain = playerStamina.staminaDrain;
 
-        // Efek stamina unlimited
         playerStamina.maxStamina = 9999f;
         playerStamina.staminaDrain = 0f;
-        Debug.Log("💚 Potion digunakan: stamina unlimited 10 detik");
+        Debug.Log("💚 Potion digunakan: stamina unlimited");
 
         yield return new WaitForSeconds(effectDuration);
 
-        // Reset stamina ke normal
         playerStamina.maxStamina = originalMax;
         playerStamina.staminaDrain = originalDrain;
         Debug.Log("💔 Potion efek habis");
 
-        // 🔻 Hapus dari inventory dan nonaktifkan object potion
-        int slotIndex = InventoryManager.instance.activeSlot;
-        InventoryManager.instance.ClearSlot(slotIndex);
-        InventoryManager.instance.SetActiveSlot(-1);
+        if (InventoryManager.instance != null)
+        {
+            int slotIndex = InventoryManager.instance.activeSlot;
+            InventoryManager.instance.ClearSlot(slotIndex);
+            InventoryManager.instance.SetActiveSlot(-1);
+        }
 
         if (playerPotionObject != null)
             playerPotionObject.SetActive(false);
 
-        isHeld = false;
         isEffectActive = false;
         isActive = false;
 
-        // Hapus object potion dari scene
         Destroy(gameObject);
     }
 }
