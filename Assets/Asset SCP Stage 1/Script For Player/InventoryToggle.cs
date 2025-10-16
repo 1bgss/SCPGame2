@@ -54,7 +54,6 @@ public class InventoryToggle : MonoBehaviour
     public void OnSlotClicked(int slotIndex)
     {
         float currentTime = Time.time;
-
         bool isDouble = (slotIndex == lastClickedSlot && (currentTime - lastClickTime) <= doubleClickDelay);
 
         if (isDouble)
@@ -74,28 +73,40 @@ public class InventoryToggle : MonoBehaviour
     {
         if (slotBorders == null || InventoryManager.instance == null) return;
 
-        // highlight slot
+        // Highlight slot
         for (int i = 0; i < slotBorders.Length; i++)
             slotBorders[i]?.SetActive(i == index);
 
         activeSlot = index;
         InventoryManager.instance.SetActiveSlot(index);
 
-        // hide semua main object dulu
+        // Hide semua main object dulu
         HideAllMainObjects();
 
-        // tampilkan main object berdasarkan slot
-        var item = InventoryManager.instance.GetItemAtSlot(index);
-        if (item != null)
+        // Tampilkan main object berdasarkan reference dari InventoryManager
+        var itemObject = InventoryManager.instance.GetItemObjectAtSlot(index);
+        if (itemObject != null)
         {
-            if (item == FlashlightItem.instance?.icon)
-                FlashlightItem.instance?.EquipFlashlight();
-            else if (item == PotionItem.instance?.icon)
-                PotionItem.instance?.playerPotionObject?.SetActive(true);
-            else if (item == PotionRunningItem.instance?.icon)
-                PotionRunningItem.instance?.playerPotionObject?.SetActive(true); // Speed Potion
-            else if (item == StaminaPotionItem.instance?.icon)
-                StaminaPotionItem.instance?.playerPotionObject?.SetActive(true); // Stamina Potion
+            // Potion stamina / unlimited
+            var staminaPotion = itemObject as PotionItem;
+            if (staminaPotion != null && staminaPotion.playerPotionObject != null)
+            {
+                staminaPotion.playerPotionObject.SetActive(true);
+            }
+
+            // Potion running / speed
+            var speedPotion = itemObject as PotionRunningItem;
+            if (speedPotion != null && speedPotion.playerPotionObject != null)
+            {
+                speedPotion.playerPotionObject.SetActive(true);
+            }
+
+            // Flashlight
+            var flashlight = itemObject as FlashlightItem;
+            if (flashlight != null)
+            {
+                flashlight.EquipFlashlight();
+            }
         }
 
         Debug.Log("📦 Slot " + (index + 1) + " aktif.");
@@ -103,16 +114,29 @@ public class InventoryToggle : MonoBehaviour
 
     void HideAllMainObjects()
     {
-        FlashlightItem.instance?.UnequipFlashlight();
+        if (InventoryManager.instance == null) return;
 
-        if (PotionItem.instance?.playerPotionObject != null)
-            PotionItem.instance.playerPotionObject.SetActive(false);
+        // Loop semua slot dan hide object jika masih ada
+        for (int i = 0; i < InventoryManager.instance.slotIcons.Length; i++)
+        {
+            var obj = InventoryManager.instance.GetItemObjectAtSlot(i);
+            if (obj == null) continue;
 
-        if (PotionRunningItem.instance?.playerPotionObject != null)
-            PotionRunningItem.instance.playerPotionObject.SetActive(false); // Speed Potion
+            // Potion stamina / unlimited
+            var staminaPotion = obj as PotionItem;
+            if (staminaPotion != null && staminaPotion.playerPotionObject != null)
+                staminaPotion.playerPotionObject.SetActive(false);
 
-        if (StaminaPotionItem.instance?.playerPotionObject != null)
-            StaminaPotionItem.instance.playerPotionObject.SetActive(false); // Stamina Potion
+            // Potion running / speed
+            var speedPotion = obj as PotionRunningItem;
+            if (speedPotion != null && speedPotion.playerPotionObject != null)
+                speedPotion.playerPotionObject.SetActive(false);
+
+            // Flashlight
+            var flashlight = obj as FlashlightItem;
+            if (flashlight != null)
+                flashlight.UnequipFlashlight();
+        }
     }
 
     public void ClearHighlights()
