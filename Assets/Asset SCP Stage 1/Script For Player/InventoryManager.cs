@@ -22,7 +22,7 @@ public class InventoryManager : MonoBehaviour
         lastPressTimes = new float[slotIcons.Length];
     }
 
-    // Tambah item ke slot kosong
+    // ✅ Tambah item ke slot kosong
     public bool AddItem(Sprite icon)
     {
         for (int i = 0; i < storedItems.Length; i++)
@@ -40,29 +40,27 @@ public class InventoryManager : MonoBehaviour
         return false;
     }
 
-    // Hapus item
+    // ✅ Hapus item (panggil ClearSlot agar konsisten)
     public void RemoveItem(Sprite icon)
     {
         for (int i = 0; i < storedItems.Length; i++)
         {
             if (storedItems[i] == icon)
             {
-                storedItems[i] = null;
-                slotIcons[i].sprite = null;
-                slotIcons[i].enabled = false;
-                Debug.Log($"🗑️ Item dihapus dari slot {i + 1}");
+                ClearSlot(i);
                 return;
             }
         }
     }
 
-    // Set slot aktif
+    // ✅ Set slot aktif
     public void SetActiveSlot(int index)
     {
         activeSlot = index;
+        Debug.Log($"🎯 Slot aktif sekarang: {index + 1}");
     }
 
-    // Cek klik ganda
+    // ✅ Cek klik ganda
     public bool IsDoublePress(int index)
     {
         float time = Time.time;
@@ -75,6 +73,7 @@ public class InventoryManager : MonoBehaviour
         return false;
     }
 
+    // ✅ Ambil item dari slot tertentu
     public Sprite GetItemAtSlot(int index)
     {
         if (index >= 0 && index < storedItems.Length)
@@ -82,6 +81,7 @@ public class InventoryManager : MonoBehaviour
         return null;
     }
 
+    // ✅ Kosongkan semua slot
     public void ClearAllSlots()
     {
         for (int i = 0; i < storedItems.Length; i++)
@@ -92,5 +92,16 @@ public class InventoryManager : MonoBehaviour
         }
         activeSlot = -1;
         Debug.Log("🧹 Semua slot dikosongkan.");
+    }
+
+    // ✅ Kosongkan satu slot tertentu
+    public void ClearSlot(int index)
+    {
+        if (index < 0 || index >= storedItems.Length) return;
+
+        storedItems[index] = null;
+        slotIcons[index].sprite = null;
+        slotIcons[index].enabled = false;
+        Debug.Log($"🗑️ Slot {index + 1} dikosongkan.");
     }
 }
