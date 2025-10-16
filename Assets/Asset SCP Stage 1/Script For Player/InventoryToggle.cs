@@ -39,9 +39,7 @@ public class InventoryToggle : MonoBehaviour
 
         if (isDouble && activeSlot == index)
         {
-            // hide main object
             HideAllMainObjects();
-
             slotBorders[index]?.SetActive(false);
             activeSlot = -1;
             InventoryManager.instance.SetActiveSlot(-1);
@@ -94,6 +92,8 @@ public class InventoryToggle : MonoBehaviour
                 FlashlightItem.instance?.EquipFlashlight();
             else if (item == PotionItem.instance?.icon)
                 PotionItem.instance?.playerPotionObject.SetActive(true);
+            else if (item == PotionRunningItem.instance?.icon)
+                PotionRunningItem.instance?.playerPotionObject.SetActive(true);
         }
 
         Debug.Log("📦 Slot " + (index + 1) + " aktif.");
@@ -104,6 +104,8 @@ public class InventoryToggle : MonoBehaviour
         FlashlightItem.instance?.UnequipFlashlight();
         if (PotionItem.instance != null)
             PotionItem.instance.playerPotionObject.SetActive(false);
+        if (PotionRunningItem.instance != null)
+            PotionRunningItem.instance.playerPotionObject.SetActive(false);
     }
 
     public void ClearHighlights()
