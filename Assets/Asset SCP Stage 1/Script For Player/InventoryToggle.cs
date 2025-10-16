@@ -39,13 +39,12 @@ public class InventoryToggle : MonoBehaviour
 
         if (isDouble && activeSlot == index)
         {
+            // hide main object
+            HideAllMainObjects();
+
             slotBorders[index]?.SetActive(false);
             activeSlot = -1;
             InventoryManager.instance.SetActiveSlot(-1);
-
-            // Notify items: flashlight/potion hide
-            FlashlightItem.instance?.OnSlotDoubleClicked(index);
-            PotionItem.instance?.OnSlotDoubleClicked(index);
 
             Debug.Log("Item dilepas dari slot " + (index + 1));
             return;
@@ -58,10 +57,11 @@ public class InventoryToggle : MonoBehaviour
     {
         float currentTime = Time.time;
 
-        if (slotIndex == lastClickedSlot && (currentTime - lastClickTime) <= doubleClickDelay)
+        bool isDouble = (slotIndex == lastClickedSlot && (currentTime - lastClickTime) <= doubleClickDelay);
+
+        if (isDouble)
         {
-            FlashlightItem.instance?.OnSlotDoubleClicked(slotIndex);
-            PotionItem.instance?.OnSlotDoubleClicked(slotIndex);
+            HideAllMainObjects();
             lastClickTime = 0f;
             lastClickedSlot = -1;
             return;
@@ -76,24 +76,34 @@ public class InventoryToggle : MonoBehaviour
     {
         if (slotBorders == null || InventoryManager.instance == null) return;
 
+        // highlight slot
         for (int i = 0; i < slotBorders.Length; i++)
             slotBorders[i]?.SetActive(i == index);
 
         activeSlot = index;
         InventoryManager.instance.SetActiveSlot(index);
 
-        // Show/hide main items berdasarkan slot
-        if (InventoryManager.instance.GetItemAtSlot(index) == FlashlightItem.instance?.icon)
-            FlashlightItem.instance?.EquipFlashlight();
-        else
-            FlashlightItem.instance?.UnequipFlashlight();
+        // hide semua main object dulu
+        HideAllMainObjects();
 
-        if (InventoryManager.instance.GetItemAtSlot(index) == PotionItem.instance?.icon)
-            PotionItem.instance?.playerPotionObject.SetActive(true);
-        else if (PotionItem.instance != null)
-            PotionItem.instance.playerPotionObject.SetActive(false);
+        // tampilkan main object berdasarkan slot
+        var item = InventoryManager.instance.GetItemAtSlot(index);
+        if (item != null)
+        {
+            if (item == FlashlightItem.instance?.icon)
+                FlashlightItem.instance?.EquipFlashlight();
+            else if (item == PotionItem.instance?.icon)
+                PotionItem.instance?.playerPotionObject.SetActive(true);
+        }
 
         Debug.Log("📦 Slot " + (index + 1) + " aktif.");
+    }
+
+    void HideAllMainObjects()
+    {
+        FlashlightItem.instance?.UnequipFlashlight();
+        if (PotionItem.instance != null)
+            PotionItem.instance.playerPotionObject.SetActive(false);
     }
 
     public void ClearHighlights()
@@ -106,8 +116,6 @@ public class InventoryToggle : MonoBehaviour
         activeSlot = -1;
         InventoryManager.instance?.SetActiveSlot(-1);
 
-        FlashlightItem.instance?.UnequipFlashlight();
-        if (PotionItem.instance != null)
-            PotionItem.instance.playerPotionObject.SetActive(false);
+        HideAllMainObjects();
     }
 }

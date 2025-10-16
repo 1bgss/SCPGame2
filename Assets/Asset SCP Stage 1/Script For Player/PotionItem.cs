@@ -6,11 +6,11 @@ public class PotionItem : MonoBehaviour
     public static PotionItem instance;
 
     [Header("Referensi Potion")]
-    public GameObject playerPotionObject; // main potion di tangan player
+    public GameObject playerPotionObject; // potion di tangan player (main)
     public Sprite icon;                    // icon untuk inventory
     public float pickupRange = 2f;
+    public int potionSlotIndex = 2;        // misal slot 3 (index 2)
     public float effectDuration = 10f;     // durasi efek potion
-    public int assignedSlot = 0;           // slot khusus potion
 
     [Header("Debug / Optional")]
     public bool autoUseForDebug = false;   // langsung pakai saat pickup
@@ -22,7 +22,6 @@ public class PotionItem : MonoBehaviour
 
     private Transform player;
     private Collider col;
-
     private PlayerStamina stamina;
 
     void Awake()
@@ -34,7 +33,7 @@ public class PotionItem : MonoBehaviour
         if (player != null)
             stamina = player.GetComponent<PlayerStamina>();
 
-        // hide main potion di tangan
+        // hide main potion dulu
         if (playerPotionObject != null)
             playerPotionObject.SetActive(false);
     }
@@ -44,42 +43,18 @@ public class PotionItem : MonoBehaviour
         if (player == null) return;
         float distance = Vector3.Distance(player.position, transform.position);
 
-        // PICKUP dari dunia
+        // PICKUP dengan E
         if (canTake && Input.GetKeyDown(KeyCode.E) && distance <= pickupRange && !isHeld)
             TakePotion();
 
-        if (isHeld)
-        {
-            // tampilkan main potion kalau slot aktif dan efek belum aktif
-            if (InventoryManager.instance.activeSlot == assignedSlot && !isEffectActive)
-            {
-                if (playerPotionObject != null)
-                    playerPotionObject.SetActive(true);
-
-                // pakai potion dengan F
-                if (Input.GetKeyDown(KeyCode.F))
-                    UsePotion();
-            }
-            else
-            {
-                // hide main potion kalau slot bukan potion
-                if (playerPotionObject != null)
-                    playerPotionObject.SetActive(false);
-            }
-        }
+        // USE dengan F jika potion di slot aktif
+        if (isHeld && InventoryManager.instance.activeSlot == potionSlotIndex && Input.GetKeyDown(KeyCode.F))
+            UsePotion();
     }
 
-    // =====================================================
-    // AMBIL POTION
-    // =====================================================
     private void TakePotion()
     {
-        bool added = InventoryManager.instance.AddItem(icon);
-        if (!added)
-        {
-            Debug.Log("❌ Inventory penuh!");
-            return;
-        }
+        if (!InventoryManager.instance.AddItem(icon)) return;
 
         isHeld = true;
         if (col != null) col.enabled = false;
@@ -91,13 +66,9 @@ public class PotionItem : MonoBehaviour
             UsePotion();
     }
 
-    // =====================================================
-    // PAKAI POTION
-    // =====================================================
     public void UsePotion()
     {
-        if (!isHeld || isEffectActive) return;
-        if (stamina == null) return;
+        if (!isHeld || isEffectActive || stamina == null) return;
 
         isEffectActive = true;
 
@@ -129,12 +100,9 @@ public class PotionItem : MonoBehaviour
         isHeld = false;
         isEffectActive = false;
 
-        Destroy(gameObject); // optional, world object juga hilang
+        Destroy(gameObject); // optional, hilangkan world object
     }
 
-    // =====================================================
-    // DETEKSI PLAYER
-    // =====================================================
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
@@ -147,12 +115,12 @@ public class PotionItem : MonoBehaviour
             canTake = false;
     }
 
-    // =====================================================
-    // DOUBLE CLICK SLOT (UI)
-    // =====================================================
     public void OnSlotDoubleClicked(int slotIndex)
     {
-        if (slotIndex != assignedSlot || !isHeld) return;
-        UsePotion();
+        if (slotIndex != potionSlotIndex || !isHeld) return;
+
+        // hide main potion jika double click (belum dipakai)
+        if (playerPotionObject != null)
+            playerPotionObject.SetActive(false);
     }
 }
