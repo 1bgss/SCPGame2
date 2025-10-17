@@ -6,7 +6,7 @@ public class TapExitCard : MonoBehaviour
     [Header("Referensi Lampu & Pintu")]
     public GameObject greenLight;
     public GameObject redLight;
-    public Transform doorTransform; // opsional
+    public Transform doorTransform;
     public float openAngle = 90f;
     public float openSpeed = 2f;
 
@@ -34,14 +34,14 @@ public class TapExitCard : MonoBehaviour
         Debug.Log($"[TapExitCard] Script aktif di object: {gameObject.name}");
 
         if (doorTransform == null)
-            Debug.LogWarning("[TapExitCard] DoorTransform belum di-assign, tapi tetap lanjut (mode lampu saja)");
+            Debug.LogWarning("[TapExitCard] DoorTransform belum di-assign (pintu opsional)");
 
-        // Tambahan debug untuk collider
+        // Pastikan collider benar
         Collider col = GetComponent<Collider>();
         if (col == null)
-            Debug.LogError("[TapExitCard] ⚠️ Tidak ada Collider di object ini! Tambahkan Box Collider (Is Trigger)");
+            Debug.LogError("[TapExitCard] ⚠️ Tidak ada Collider! Tambahkan Box Collider + centang Is Trigger");
         else if (!col.isTrigger)
-            Debug.LogWarning("[TapExitCard] ⚠️ Collider belum diset Is Trigger = true");
+            Debug.LogWarning("[TapExitCard] ⚠️ Collider belum Is Trigger = true");
     }
 
     void Update()
@@ -53,7 +53,7 @@ public class TapExitCard : MonoBehaviour
             Debug.Log("[TapExitCard] E ditekan di area trigger");
 
             bool hasExitCard = CheckExitCardInInventory();
-            Debug.Log("[TapExitCard] Punya kartu? " + hasExitCard);
+            Debug.Log("[TapExitCard] Slot aktif berisi kartu? " + hasExitCard);
 
             if (hasExitCard)
             {
@@ -81,6 +81,7 @@ public class TapExitCard : MonoBehaviour
         Debug.Log("[TapExitCard] Lampu direset ke OFF");
     }
 
+    // ✅ hanya cek slot aktif
     private bool CheckExitCardInInventory()
     {
         if (InventoryManager.instance == null)
@@ -89,13 +90,17 @@ public class TapExitCard : MonoBehaviour
             return false;
         }
 
-        for (int i = 0; i < InventoryManager.instance.slotIcons.Length; i++)
+        int active = InventoryManager.instance.activeSlot;
+        if (active < 0 || active >= InventoryManager.instance.slotIcons.Length)
         {
-            var obj = InventoryManager.instance.GetItemObjectAtSlot(i);
-            if (obj != null && obj is ExitCardItem)
-                return true;
+            Debug.Log("[TapExitCard] Tidak ada slot aktif!");
+            return false;
         }
-        return false;
+
+        var activeObj = InventoryManager.instance.GetItemObjectAtSlot(active);
+        bool hasCard = (activeObj != null && activeObj is ExitCardItem);
+        Debug.Log("[TapExitCard] Slot aktif (" + active + ") berisi ExitCard? " + hasCard);
+        return hasCard;
     }
 
     private IEnumerator OpenDoor()
