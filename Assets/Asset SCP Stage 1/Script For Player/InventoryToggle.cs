@@ -80,36 +80,34 @@ public class InventoryToggle : MonoBehaviour
         activeSlot = index;
         InventoryManager.instance.SetActiveSlot(index);
 
-        // Hide semua main object dulu
+        // Hide semua object tangan dulu
         HideAllMainObjects();
 
-        // Tampilkan object di tangan sesuai jenis potion / flashlight
+        // Tampilkan object tangan sesuai jenis item
         var itemObject = InventoryManager.instance.GetItemObjectAtSlot(index);
-        if (itemObject != null)
-        {
-            // Potion stamina (PotionItem / PotionUnlimitedStamina)
-            var staminaPotion = itemObject as PotionItem;
-            if (staminaPotion != null && staminaPotion.playerPotionObject != null)
-                staminaPotion.playerPotionObject.SetActive(true);
+        if (itemObject == null) return;
 
-            var unlimitedPotion = itemObject as PotionUnlimitedStamina;
-            if (unlimitedPotion != null && unlimitedPotion.playerPotionObject != null)
-                unlimitedPotion.playerPotionObject.SetActive(true);
+        // Potion stamina
+        if (itemObject is PotionItem staminaPotion && staminaPotion.playerPotionObject != null)
+            staminaPotion.playerPotionObject.SetActive(true);
 
-            // Potion speed / running
-            var speedPotion = itemObject as PotionRunningItem;
-            if (speedPotion != null && speedPotion.playerPotionObject != null)
-                speedPotion.playerPotionObject.SetActive(true);
+        if (itemObject is PotionUnlimitedStamina unlimitedPotion && unlimitedPotion.playerPotionObject != null)
+            unlimitedPotion.playerPotionObject.SetActive(true);
 
-            var speedPotion2 = itemObject as PotionSpeedItem;
-            if (speedPotion2 != null && speedPotion2.playerPotionObject != null)
-                speedPotion2.playerPotionObject.SetActive(true);
+        // Potion speed / running
+        if (itemObject is PotionRunningItem speedPotion && speedPotion.playerPotionObject != null)
+            speedPotion.playerPotionObject.SetActive(true);
 
-            // Flashlight
-            var flashlight = itemObject as FlashlightItem;
-            if (flashlight != null)
-                flashlight.EquipFlashlight();
-        }
+        if (itemObject is PotionSpeedItem speedPotion2 && speedPotion2.playerPotionObject != null)
+            speedPotion2.playerPotionObject.SetActive(true);
+
+        // Exit Card
+        if (itemObject is ExitCardItem exitCard && exitCard.mainCardObject != null)
+            exitCard.mainCardObject.SetActive(true);
+
+        // Flashlight
+        if (itemObject is FlashlightItem flashlight)
+            flashlight.EquipFlashlight();
 
         Debug.Log("📦 Slot " + (index + 1) + " aktif.");
     }
@@ -118,33 +116,27 @@ public class InventoryToggle : MonoBehaviour
     {
         if (InventoryManager.instance == null) return;
 
-        // Loop semua slot dan hide object jika masih ada
         for (int i = 0; i < InventoryManager.instance.slotIcons.Length; i++)
         {
             var obj = InventoryManager.instance.GetItemObjectAtSlot(i);
             if (obj == null) continue;
 
-            // Potion stamina
-            var staminaPotion = obj as PotionItem;
-            if (staminaPotion != null && staminaPotion.playerPotionObject != null)
+            if (obj is PotionItem staminaPotion && staminaPotion.playerPotionObject != null)
                 staminaPotion.playerPotionObject.SetActive(false);
 
-            var unlimitedPotion = obj as PotionUnlimitedStamina;
-            if (unlimitedPotion != null && unlimitedPotion.playerPotionObject != null)
+            if (obj is PotionUnlimitedStamina unlimitedPotion && unlimitedPotion.playerPotionObject != null)
                 unlimitedPotion.playerPotionObject.SetActive(false);
 
-            // Potion speed / running
-            var speedPotion = obj as PotionRunningItem;
-            if (speedPotion != null && speedPotion.playerPotionObject != null)
+            if (obj is PotionRunningItem speedPotion && speedPotion.playerPotionObject != null)
                 speedPotion.playerPotionObject.SetActive(false);
 
-            var speedPotion2 = obj as PotionSpeedItem;
-            if (speedPotion2 != null && speedPotion2.playerPotionObject != null)
+            if (obj is PotionSpeedItem speedPotion2 && speedPotion2.playerPotionObject != null)
                 speedPotion2.playerPotionObject.SetActive(false);
 
-            // Flashlight
-            var flashlight = obj as FlashlightItem;
-            if (flashlight != null)
+            if (obj is ExitCardItem exitCard && exitCard.mainCardObject != null)
+                exitCard.mainCardObject.SetActive(false);
+
+            if (obj is FlashlightItem flashlight)
                 flashlight.UnequipFlashlight();
         }
     }
