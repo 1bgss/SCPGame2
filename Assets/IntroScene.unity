@@ -152,7 +152,7 @@ MonoBehaviour:
   videoPlayer: {fileID: 326301318}
   fadeImage: {fileID: 1383539002}
   fadeDuration: 1
-  nextSceneName: x
+  nextSceneName: MainMenu
 --- !u!328 &326301318
 VideoPlayer:
   m_ObjectHideFlags: 0
