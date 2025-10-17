@@ -1,21 +1,48 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using System.Collections;
 
 public class TapExitCard : MonoBehaviour
 {
-    [Header("Referensi")]
+    [Header("Referensi Lampu & Pintu")]
     public GameObject greenLight;
     public GameObject redLight;
-    public Animator doorAnimator;
-    public string blackScreenSceneName = "BlackScreenScene";
-    public CanvasGroup fadeCanvas; // CanvasGroup untuk fade
-    public float fadeDuration = 1f;
-    public GameObject toBeContinuedUI; // UI Panel dengan teks & tombol
+    public Transform doorTransform; // opsional
+    public float openAngle = 90f;
+    public float openSpeed = 2f;
+
+    [Header("Waktu Reset Lampu")]
+    public float lightResetDelay = 2f;
 
     private bool canTap = false;
     private bool doorOpened = false;
+    private Quaternion closedRotation;
+    private Quaternion openRotation;
+
+    void Start()
+    {
+        // Simpan rotasi awal pintu (jika ada)
+        if (doorTransform != null)
+        {
+            closedRotation = doorTransform.rotation;
+            openRotation = doorTransform.rotation * Quaternion.Euler(0, openAngle, 0);
+        }
+
+        // Matikan semua lampu di awal
+        if (greenLight != null) greenLight.SetActive(false);
+        if (redLight != null) redLight.SetActive(false);
+
+        Debug.Log($"[TapExitCard] Script aktif di object: {gameObject.name}");
+
+        if (doorTransform == null)
+            Debug.LogWarning("[TapExitCard] DoorTransform belum di-assign, tapi tetap lanjut (mode lampu saja)");
+
+        // Tambahan debug untuk collider
+        Collider col = GetComponent<Collider>();
+        if (col == null)
+            Debug.LogError("[TapExitCard] ⚠️ Tidak ada Collider di object ini! Tambahkan Box Collider (Is Trigger)");
+        else if (!col.isTrigger)
+            Debug.LogWarning("[TapExitCard] ⚠️ Collider belum diset Is Trigger = true");
+    }
 
     void Update()
     {
@@ -23,30 +50,44 @@ public class TapExitCard : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.E))
         {
+            Debug.Log("[TapExitCard] E ditekan di area trigger");
+
             bool hasExitCard = CheckExitCardInInventory();
+            Debug.Log("[TapExitCard] Punya kartu? " + hasExitCard);
 
             if (hasExitCard)
             {
-                greenLight.SetActive(true);
-                redLight.SetActive(false);
+                if (greenLight != null) greenLight.SetActive(true);
+                if (redLight != null) redLight.SetActive(false);
+                StartCoroutine(ResetLights());
 
-                if (!doorOpened)
-                {
-                    doorAnimator.SetTrigger("Open");
-                    doorOpened = true;
-                }
+                if (doorTransform != null && !doorOpened)
+                    StartCoroutine(OpenDoor());
             }
             else
             {
-                redLight.SetActive(true);
-                greenLight.SetActive(false);
+                if (redLight != null) redLight.SetActive(true);
+                if (greenLight != null) greenLight.SetActive(false);
+                StartCoroutine(ResetLights());
             }
         }
     }
 
+    private IEnumerator ResetLights()
+    {
+        yield return new WaitForSeconds(lightResetDelay);
+        if (greenLight != null) greenLight.SetActive(false);
+        if (redLight != null) redLight.SetActive(false);
+        Debug.Log("[TapExitCard] Lampu direset ke OFF");
+    }
+
     private bool CheckExitCardInInventory()
     {
-        if (InventoryManager.instance == null) return false;
+        if (InventoryManager.instance == null)
+        {
+            Debug.LogWarning("[TapExitCard] InventoryManager.instance == null (belum ada di scene?)");
+            return false;
+        }
 
         for (int i = 0; i < InventoryManager.instance.slotIcons.Length; i++)
         {
@@ -57,11 +98,41 @@ public class TapExitCard : MonoBehaviour
         return false;
     }
 
+    private IEnumerator OpenDoor()
+    {
+        doorOpened = true;
+        Debug.Log("[TapExitCard] Membuka pintu...");
+
+        float t = 0;
+        while (t < 1f)
+        {
+            t += Time.deltaTime * openSpeed;
+            doorTransform.rotation = Quaternion.Slerp(closedRotation, openRotation, t);
+            yield return null;
+        }
+
+        Debug.Log("[TapExitCard] Pintu terbuka penuh, menunggu sebelum menutup...");
+        yield return new WaitForSeconds(2f);
+
+        // Tutup kembali
+        t = 0;
+        while (t < 1f)
+        {
+            t += Time.deltaTime * openSpeed;
+            doorTransform.rotation = Quaternion.Slerp(openRotation, closedRotation, t);
+            yield return null;
+        }
+
+        doorOpened = false;
+        Debug.Log("[TapExitCard] Pintu ditutup kembali.");
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
             canTap = true;
+            Debug.Log("[TapExitCard] ✅ Player MASUK area trigger");
         }
     }
 
@@ -70,50 +141,7 @@ public class TapExitCard : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             canTap = false;
+            Debug.Log("[TapExitCard] ⛔ Player KELUAR area trigger");
         }
-    }
-
-    private void OnTriggerStay(Collider other)
-    {
-        if (!doorOpened) return;
-        if (other.CompareTag("Player"))
-        {
-            doorAnimator.SetTrigger("Close"); // Tutup pintu saat player masuk
-            doorOpened = false;
-
-            // Mulai transisi ke black screen
-            StartCoroutine(FadeToBlack());
-        }
-    }
-
-    private IEnumerator FadeToBlack()
-    {
-        if (fadeCanvas != null)
-        {
-            fadeCanvas.gameObject.SetActive(true);
-            fadeCanvas.alpha = 0;
-
-            float t = 0;
-            while (t < fadeDuration)
-            {
-                fadeCanvas.alpha = Mathf.Lerp(0, 1, t / fadeDuration);
-                t += Time.deltaTime;
-                yield return null;
-            }
-            fadeCanvas.alpha = 1;
-        }
-
-        if (toBeContinuedUI != null)
-            toBeContinuedUI.SetActive(true);
-
-        // Bisa pause game saat muncul To Be Continued
-        Time.timeScale = 0f;
-    }
-
-    // Fungsi tombol Back to Main Menu
-    public void BackToMainMenu(string mainMenuScene)
-    {
-        Time.timeScale = 1f;
-        SceneManager.LoadScene(mainMenuScene);
     }
 }
