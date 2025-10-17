@@ -23,8 +23,15 @@ public class ExitCardItem : MonoBehaviour
         col = GetComponent<Collider>();
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
 
+        // Tetap hide sampai slot diklik
         if (mainCardObject != null)
+        {
             mainCardObject.SetActive(false);
+            mainCardObject.transform.SetParent(player);
+            mainCardObject.transform.localPosition = handLocalPos;
+            mainCardObject.transform.localEulerAngles = handLocalRot;
+            mainCardObject.transform.localScale = handLocalScale;
+        }
     }
 
     void Update()
@@ -36,10 +43,6 @@ public class ExitCardItem : MonoBehaviour
         // Ambil kartu dengan E
         if (canTake && Input.GetKeyDown(KeyCode.E) && distance <= pickupRange && !isHeld)
             TakeCard();
-
-        // Gunakan kartu dengan F (contoh: nanti bisa panggil ExitGate.OpenDoor)
-        if (isHeld && Input.GetKeyDown(KeyCode.F))
-            UseCard();
     }
 
     private void TakeCard()
@@ -47,34 +50,31 @@ public class ExitCardItem : MonoBehaviour
         if (!InventoryManager.instance.AddItem(icon, this)) return;
 
         isHeld = true;
-        gameObject.SetActive(false);
-
-        // Parent ke player
-        if (mainCardObject != null && player != null)
-        {
-            mainCardObject.SetActive(true);
-            mainCardObject.transform.SetParent(player);
-
-            mainCardObject.transform.localPosition = handLocalPos;
-            mainCardObject.transform.localEulerAngles = handLocalRot;
-            mainCardObject.transform.localScale = handLocalScale;
-        }
+        gameObject.SetActive(false); // Destroy world object, mainCard tetap di tangan tapi hide
 
         Debug.Log("✅ Exit Card diambil dan masuk inventory!");
+    }
+
+    // Akan dipanggil dari InventoryToggle saat slot diklik
+    public void ShowCardInHand()
+    {
+        if (mainCardObject != null)
+            mainCardObject.SetActive(true);
+    }
+
+    public void HideCardInHand()
+    {
+        if (mainCardObject != null)
+            mainCardObject.SetActive(false);
     }
 
     public void UseCard()
     {
         if (!isHeld) return;
 
-        // Bisa diisi logika tap ke ExitGate
         Debug.Log("🟢 Exit Card digunakan!");
-
         // Contoh: panggil fungsi pintu buka
         // ExitGate.instance.OpenDoor();
-
-        // Jika ingin kartu hilang, bisa destroy mainCardObject
-        // Destroy(mainCardObject);
     }
 
     private void OnTriggerEnter(Collider other)
