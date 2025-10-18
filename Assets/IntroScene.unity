@@ -151,7 +151,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::IntroController
   videoPlayer: {fileID: 326301318}
   fadeImage: {fileID: 1383539002}
-  fadeDuration: 1
+  fadeDuration: 2
   nextSceneName: MainMenu
 --- !u!328 &326301318
 VideoPlayer:

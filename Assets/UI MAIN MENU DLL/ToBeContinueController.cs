@@ -5,31 +5,44 @@ using System.Collections;
 
 public class ToBeContinueController : MonoBehaviour
 {
-    public Image fadeImage; // UI Image hitam overlay
-    public float fadeDuration = 2f;
-    public float displayDuration = 3f;
-    public string nextSceneName = "MainMenu"; // tujuan setelah ini
+    [Header("Fade Settings")]
+    public Image fadeImage;               // UI Image full screen hitam
+    public float fadeDuration = 2f;       // durasi fade in/out
+    public float displayDuration = 3f;    // durasi menunggu layar terbuka
+    public string nextSceneName = "MainMenu"; // nama scene tujuan
 
     private void Start()
     {
+        // Pastikan canvas aktif dan raycast aktif saat fade
+        fadeImage.gameObject.SetActive(true);
+        fadeImage.raycastTarget = true;
+
+        // Hitam penuh awal
+        fadeImage.color = new Color(0,0,0,1);
+
         StartCoroutine(FadeSequence());
     }
 
     private IEnumerator FadeSequence()
     {
-        // mulai dari layar hitam
-        fadeImage.color = new Color(0, 0, 0, 1);
+        // --- Fade in (hitam -> transparan) ---
+        yield return StartCoroutine(FadeImage(fadeImage, 1f, 0f, fadeDuration));
 
-        // Fade in (buka layar)
-        yield return StartCoroutine(FadeImage(fadeImage, 1, 0, fadeDuration));
-
-        // Tahan beberapa detik sebelum fade out
+        // Tahan layar terbuka
         yield return new WaitForSeconds(displayDuration);
 
-        // Fade out layar hitam
-        yield return StartCoroutine(FadeImage(fadeImage, 0, 1, fadeDuration));
+        // --- Fade out (transparan -> hitam) ---
+        yield return StartCoroutine(FadeImage(fadeImage, 0f, 1f, fadeDuration));
 
-        // Pindah ke scene berikutnya
+        // Nonaktifkan raycast agar UI MainMenu bisa diklik
+        fadeImage.raycastTarget = false;
+        fadeImage.gameObject.SetActive(false);
+
+        // Pastikan cursor muncul di MainMenu
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        // Pindah ke scene MainMenu
         SceneManager.LoadScene(nextSceneName);
     }
 

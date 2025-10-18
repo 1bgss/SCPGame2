@@ -5,23 +5,67 @@ using System.Collections;
 
 public class MainMenuController : MonoBehaviour
 {
-    public string sceneToLoad = "x";  // nama scene tujuan
-    public Image fadeOverlay;         // image hitam untuk efek fade
-    public float fadeDuration = 1f;
+    [Header("Fade Settings")]
+    public Image fadeOverlay;       // UI Image full screen hitam
+    public float fadeDuration = 1f; // durasi fade masuk/keluar
+    public string playScene = "SceneX"; // scene tujuan Play
+    public string exitScene = "";       // jika mau exit pakai fungsi Application.Quit()
 
     private bool isFading = false;
+
+    void Start()
+    {
+        // Pastikan overlay aktif dan menutupi layar awal
+        if (fadeOverlay != null)
+        {
+            fadeOverlay.gameObject.SetActive(true);
+            fadeOverlay.raycastTarget = true;
+            fadeOverlay.color = new Color(0, 0, 0, 1); // hitam penuh
+            StartCoroutine(FadeIn());
+        }
+
+        // Cursor muncul saat MainMenu aktif
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
+    // Fade in dari hitam → transparan
+    private IEnumerator FadeIn()
+    {
+        float t = 0f;
+        Color c = fadeOverlay.color;
+
+        while (t < fadeDuration)
+        {
+            t += Time.deltaTime;
+            c.a = Mathf.Lerp(1f, 0f, t / fadeDuration);
+            fadeOverlay.color = c;
+            yield return null;
+        }
+
+        c.a = 0f;
+        fadeOverlay.color = c;
+        fadeOverlay.raycastTarget = false; // biar tombol bisa diklik
+    }
 
     // Dipanggil dari tombol Play
     public void OnPlayButton()
     {
-        if (isFading)
+        if (!isFading)
         {
-            Debug.Log("⏳ Masih fading, klik diabaikan.");
-            return;
+            StartCoroutine(FadeOutAndLoad(playScene));
         }
+    }
 
-        Debug.Log("🎮 Tombol Play diklik!");
-        StartCoroutine(FadeOutAndLoad(sceneToLoad));
+    // Dipanggil dari tombol Exit
+    public void OnExitButton()
+    {
+        if (!isFading)
+        {
+            // Bisa pakai fade juga kalau mau
+            Application.Quit();
+            Debug.Log("Game keluar!");
+        }
     }
 
     private IEnumerator FadeOutAndLoad(string sceneName)
@@ -30,19 +74,24 @@ public class MainMenuController : MonoBehaviour
 
         if (fadeOverlay != null)
         {
+            fadeOverlay.gameObject.SetActive(true);
+            fadeOverlay.raycastTarget = true;
+
             Color c = fadeOverlay.color;
-            float t = 0;
+            float t = 0f;
 
             while (t < fadeDuration)
             {
                 t += Time.deltaTime;
-                c.a = Mathf.Lerp(0, 1, t / fadeDuration);
+                c.a = Mathf.Lerp(0f, 1f, t / fadeDuration);
                 fadeOverlay.color = c;
                 yield return null;
             }
+
+            c.a = 1f;
+            fadeOverlay.color = c;
         }
 
-        Debug.Log("🌑 Fade selesai, ganti ke scene: " + sceneName);
         SceneManager.LoadScene(sceneName);
     }
 }
