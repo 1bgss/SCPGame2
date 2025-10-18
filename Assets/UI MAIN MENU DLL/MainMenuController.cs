@@ -5,56 +5,44 @@ using System.Collections;
 
 public class MainMenuController : MonoBehaviour
 {
-    public string sceneToLoad = "x";    // Scene tujuan saat Play
-    public CanvasGroup fadePanel;            // Referensi panel fade
-    public float fadeDuration = 1.5f;        // Lama fade
+    public string sceneToLoad = "x";  // nama scene tujuan
+    public Image fadeOverlay;         // image hitam untuk efek fade
+    public float fadeDuration = 1f;
 
-    void Start()
-    {
-        // Pastikan fade awal transparan
-        if (fadePanel != null)
-            fadePanel.alpha = 0;
-    }
+    private bool isFading = false;
 
+    // Dipanggil dari tombol Play
     public void OnPlayButton()
     {
-        StartCoroutine(FadeAndLoad());
-    }
-
-    public void OnTutorialButton()
-    {
-        SceneManager.LoadScene("TutorialScene");
-    }
-
-    public void OnExitButton()
-    {
-        StartCoroutine(FadeAndExit());
-    }
-
-    private IEnumerator FadeAndLoad()
-    {
-        yield return StartCoroutine(FadeIn());
-        SceneManager.LoadScene(sceneToLoad);
-    }
-
-    private IEnumerator FadeAndExit()
-    {
-        yield return StartCoroutine(FadeIn());
-        Application.Quit();
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false; // biar bisa berhenti di editor
-#endif
-    }
-
-    private IEnumerator FadeIn()
-    {
-        float t = 0;
-        while (t < fadeDuration)
+        if (isFading)
         {
-            t += Time.deltaTime;
-            if (fadePanel != null)
-                fadePanel.alpha = Mathf.Lerp(0, 1, t / fadeDuration);
-            yield return null;
+            Debug.Log("⏳ Masih fading, klik diabaikan.");
+            return;
         }
+
+        Debug.Log("🎮 Tombol Play diklik!");
+        StartCoroutine(FadeOutAndLoad(sceneToLoad));
+    }
+
+    private IEnumerator FadeOutAndLoad(string sceneName)
+    {
+        isFading = true;
+
+        if (fadeOverlay != null)
+        {
+            Color c = fadeOverlay.color;
+            float t = 0;
+
+            while (t < fadeDuration)
+            {
+                t += Time.deltaTime;
+                c.a = Mathf.Lerp(0, 1, t / fadeDuration);
+                fadeOverlay.color = c;
+                yield return null;
+            }
+        }
+
+        Debug.Log("🌑 Fade selesai, ganti ke scene: " + sceneName);
+        SceneManager.LoadScene(sceneName);
     }
 }
