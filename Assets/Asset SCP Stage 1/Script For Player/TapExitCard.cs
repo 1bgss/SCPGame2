@@ -14,7 +14,7 @@ public class TapExitCard : MonoBehaviour
     public float lightResetDelay = 2f;
 
     [Header("Scene Transition")]
-    public ExitGateFadeController fadeController; // drag Canvas Fade
+    public penamanExitDoorFadeOke fadeController; // drag Canvas Fade baru
     public string nextSceneName = "SpiritIconToBeContinue"; // nama scene berikut
 
     private bool canTap = false;
@@ -24,17 +24,20 @@ public class TapExitCard : MonoBehaviour
 
     void Start()
     {
+        // Set posisi awal dan posisi terbuka pintu
         if (doorTransform != null)
         {
             closedRotation = doorTransform.rotation;
             openRotation = doorTransform.rotation * Quaternion.Euler(0, openAngle, 0);
         }
 
+        // Matikan lampu awal
         if (greenLight != null) greenLight.SetActive(false);
         if (redLight != null) redLight.SetActive(false);
 
         Debug.Log($"[TapExitCard] Script aktif di object: {gameObject.name}");
 
+        // Cek collider
         Collider col = GetComponent<Collider>();
         if (col == null)
             Debug.LogError("[TapExitCard] ⚠️ Tidak ada Collider! Tambahkan Box Collider + centang Is Trigger");
@@ -46,6 +49,7 @@ public class TapExitCard : MonoBehaviour
     {
         if (!canTap) return;
 
+        // Tombol E untuk menggunakan kartu
         if (Input.GetKeyDown(KeyCode.E))
         {
             Debug.Log("[TapExitCard] E ditekan di area trigger");
@@ -55,15 +59,18 @@ public class TapExitCard : MonoBehaviour
 
             if (hasExitCard)
             {
+                // Lampu hijau ON
                 if (greenLight != null) greenLight.SetActive(true);
                 if (redLight != null) redLight.SetActive(false);
                 StartCoroutine(ResetLights());
 
+                // Buka pintu
                 if (doorTransform != null && !doorOpened)
                     StartCoroutine(OpenDoor());
             }
             else
             {
+                // Lampu merah ON
                 if (redLight != null) redLight.SetActive(true);
                 if (greenLight != null) greenLight.SetActive(false);
                 StartCoroutine(ResetLights());
@@ -74,8 +81,10 @@ public class TapExitCard : MonoBehaviour
     private IEnumerator ResetLights()
     {
         yield return new WaitForSeconds(lightResetDelay);
+
         if (greenLight != null) greenLight.SetActive(false);
         if (redLight != null) redLight.SetActive(false);
+
         Debug.Log("[TapExitCard] Lampu direset ke OFF");
     }
 
@@ -96,6 +105,7 @@ public class TapExitCard : MonoBehaviour
 
         var activeObj = InventoryManager.instance.GetItemObjectAtSlot(active);
         bool hasCard = (activeObj != null && activeObj is ExitCardItem);
+
         Debug.Log("[TapExitCard] Slot aktif (" + active + ") berisi ExitCard? " + hasCard);
         return hasCard;
     }
@@ -117,7 +127,7 @@ public class TapExitCard : MonoBehaviour
 
         yield return new WaitForSeconds(2f);
 
-        // 🔹 Fade ke scene berikut
+        // 🔹 Fade ke scene berikut menggunakan penamanExitDoorFadeOke
         if (fadeController != null)
         {
             fadeController.FadeToNextScene(nextSceneName);
