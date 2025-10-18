@@ -1,13 +1,11 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class PlayerDeathEffect : MonoBehaviour
 {
-    [Header("Death Settings")]
-    public string deathSceneName = "You died";
-    public float delayBeforeDeath = 1f; // waktu jeda sebelum pindah scene
-    public bool fadeOut = true;
-    public CanvasGroup fadeCanvas; // optional kalau mau efek fade
+    public float fadeDelay = 0.5f;
+    public string youDiedScene = "YouDied";
 
     private bool isDead = false;
 
@@ -16,41 +14,32 @@ public class PlayerDeathEffect : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        // Matikan semua kontrol player
-        CharacterController controller = GetComponent<CharacterController>();
-        if (controller) controller.enabled = false;
+        Debug.Log("☠️ Player mati – transisi ke scene YouDied...");
 
+        // Matikan semua kontrol
         MonoBehaviour[] scripts = GetComponents<MonoBehaviour>();
-        foreach (var s in scripts)
+        foreach (MonoBehaviour s in scripts)
         {
             if (s != this) s.enabled = false;
         }
 
-        // Optional: fade out sebelum pindah scene
-        if (fadeOut && fadeCanvas != null)
+        // Hentikan physics supaya ga jatuh ke void
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb != null)
         {
-            StartCoroutine(FadeAndLoadScene());
+            rb.linearVelocity = Vector3.zero;
+            rb.isKinematic = true;
         }
-        else
-        {
-            Invoke(nameof(LoadDeathScene), delayBeforeDeath);
-        }
+
+        // Sedikit rotasi rebah (opsional)
+        transform.rotation = Quaternion.Euler(90, transform.eulerAngles.y, 0);
+
+        StartCoroutine(LoadYouDiedScene());
     }
 
-    private System.Collections.IEnumerator FadeAndLoadScene()
+    IEnumerator LoadYouDiedScene()
     {
-        float t = 0f;
-        while (t < 1f)
-        {
-            t += Time.deltaTime;
-            fadeCanvas.alpha = Mathf.Lerp(0, 1, t);
-            yield return null;
-        }
-        LoadDeathScene();
-    }
-
-    private void LoadDeathScene()
-    {
-        SceneManager.LoadScene(deathSceneName);
+        yield return new WaitForSeconds(fadeDelay);
+        SceneManager.LoadScene(youDiedScene);
     }
 }
