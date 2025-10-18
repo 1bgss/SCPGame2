@@ -6,7 +6,6 @@ using System.Collections;
 public class ToBeContinueController : MonoBehaviour
 {
     public Image fadeImage; // UI Image hitam overlay
-    public Image toBeContinueImage; // Gambar “To Be Continued”
     public float fadeDuration = 2f;
     public float displayDuration = 3f;
     public string nextSceneName = "MainMenu"; // tujuan setelah ini
@@ -20,22 +19,17 @@ public class ToBeContinueController : MonoBehaviour
     {
         // mulai dari layar hitam
         fadeImage.color = new Color(0, 0, 0, 1);
-        toBeContinueImage.color = new Color(1, 1, 1, 0);
 
         // Fade in (buka layar)
         yield return StartCoroutine(FadeImage(fadeImage, 1, 0, fadeDuration));
 
-        // Munculkan teks
-        yield return StartCoroutine(FadeImage(toBeContinueImage, 0, 1, 1f));
-
-        // Tahan beberapa detik
+        // Tahan beberapa detik sebelum fade out
         yield return new WaitForSeconds(displayDuration);
 
-        // Fade out semua
-        yield return StartCoroutine(FadeImage(toBeContinueImage, 1, 0, 1f));
+        // Fade out layar hitam
         yield return StartCoroutine(FadeImage(fadeImage, 0, 1, fadeDuration));
 
-        // Pindah ke MainMenu
+        // Pindah ke scene berikutnya
         SceneManager.LoadScene(nextSceneName);
     }
 
