@@ -17,17 +17,14 @@ public class MonsterAI : MonoBehaviour
     public float viewRadius = 8f;
     [Range(0, 360)]
     public float viewAngle = 60f;
-    public LayerMask playerLayer;
     public LayerMask obstacleMask;
     public float timeToLosePlayer = 3f;
 
     [Header("Attack Settings")]
     public float attackRange = 1.5f;
-    public float attackCooldown = 1.5f;
 
     [Header("Scene Transition")]
-    public string youDiedScene = "You died";
-    public float fadeDelay = 0.5f;
+    public string youDiedScene = "YouDied"; // pastikan sama di Build Settings
 
     [Header("Animation (Optional)")]
     public Animator animator;
@@ -37,15 +34,12 @@ public class MonsterAI : MonoBehaviour
     private float waitTimer = 0f;
     private bool playerInSight = false;
     private float playerLostTimer = 0f;
-    private bool isAttacking = false;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         if (agent == null)
-        {
             agent = gameObject.AddComponent<NavMeshAgent>();
-        }
 
         if (waypoints.Length > 0)
             agent.SetDestination(waypoints[0].position);
@@ -53,7 +47,12 @@ public class MonsterAI : MonoBehaviour
 
     void Update()
     {
-        if (player == null) return;
+        if (player == null)
+        {
+            GameObject p = GameObject.FindGameObjectWithTag("Player");
+            if (p) player = p.transform;
+            return;
+        }
 
         if (CanSeePlayer())
         {
@@ -87,7 +86,7 @@ public class MonsterAI : MonoBehaviour
         {
             if (Vector3.Angle(transform.forward, dirToPlayer) < viewAngle / 2)
             {
-                if (!Physics.Raycast(transform.position, dirToPlayer, out RaycastHit hit, viewRadius, obstacleMask))
+                if (!Physics.Raycast(transform.position + Vector3.up * 0.6f, dirToPlayer, out RaycastHit hit, viewRadius, obstacleMask))
                 {
                     return true;
                 }
@@ -123,32 +122,26 @@ public class MonsterAI : MonoBehaviour
 
         if (animator) animator.SetBool("isChasing", true);
 
-        if (!isAttacking && Vector3.Distance(transform.position, player.position) <= attackRange)
+        // ❗ LANGSUNG MATI TANPA DELAY
+        if (Vector3.Distance(transform.position, player.position) <= attackRange)
         {
-            StartCoroutine(DoAttack());
+            KillPlayerInstant();
         }
     }
 
-    System.Collections.IEnumerator DoAttack()
+    void KillPlayerInstant()
     {
-        isAttacking = true;
-        if (animator) animator.SetTrigger("attack");
+        Debug.Log("💀 SCP langsung membunuh player! (Instant)");
 
-        yield return new WaitForSeconds(0.3f); // sedikit delay biar lebih natural
-
-        if (Vector3.Distance(transform.position, player.position) <= attackRange + 0.5f)
+        PlayerDeathEffect death = player.GetComponent<PlayerDeathEffect>();
+        if (death != null)
         {
-            Debug.Log("💀 SCP menangkap player! Game Over!");
-
-            PlayerDeathEffect death = player.GetComponent<PlayerDeathEffect>();
-            if (death != null)
-            {
-                death.Die(); // langsung panggil mati
-            }
+            death.Die();
         }
 
-        yield return new WaitForSeconds(attackCooldown);
-        isAttacking = false;
+        // Stop AI biar SCP gak terus ngejar
+        if (agent) agent.isStopped = true;
+        enabled = false;
     }
 
     void OnDrawGizmosSelected()
@@ -159,20 +152,16 @@ public class MonsterAI : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, viewRadius);
 
-        Vector3 viewAngleA = DirFromAngle(-viewAngle / 2, false);
-        Vector3 viewAngleB = DirFromAngle(viewAngle / 2, false);
-
+        Vector3 a = DirFromAngle(-viewAngle / 2, false);
+        Vector3 b = DirFromAngle(viewAngle / 2, false);
         Gizmos.color = Color.cyan;
-        Gizmos.DrawLine(transform.position, transform.position + viewAngleA * viewRadius);
-        Gizmos.DrawLine(transform.position, transform.position + viewAngleB * viewRadius);
+        Gizmos.DrawLine(transform.position, transform.position + a * viewRadius);
+        Gizmos.DrawLine(transform.position, transform.position + b * viewRadius);
     }
 
-    Vector3 DirFromAngle(float angleInDegrees, bool angleIsGlobal)
+    Vector3 DirFromAngle(float angleDeg, bool global)
     {
-        if (!angleIsGlobal)
-        {
-            angleInDegrees += transform.eulerAngles.y;
-        }
-        return new Vector3(Mathf.Sin(angleInDegrees * Mathf.Deg2Rad), 0, Mathf.Cos(angleInDegrees * Mathf.Deg2Rad));
+        if (!global) angleDeg += transform.eulerAngles.y;
+        return new Vector3(Mathf.Sin(angleDeg * Mathf.Deg2Rad), 0, Mathf.Cos(angleDeg * Mathf.Deg2Rad));
     }
 }
