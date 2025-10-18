@@ -13,6 +13,10 @@ public class TapExitCard : MonoBehaviour
     [Header("Waktu Reset Lampu")]
     public float lightResetDelay = 2f;
 
+    [Header("Scene Transition")]
+    public ExitGateFadeController fadeController; // drag Canvas Fade
+    public string nextSceneName = "SpiritIconToBeContinue"; // nama scene berikut
+
     private bool canTap = false;
     private bool doorOpened = false;
     private Quaternion closedRotation;
@@ -20,23 +24,17 @@ public class TapExitCard : MonoBehaviour
 
     void Start()
     {
-        // Simpan rotasi awal pintu (jika ada)
         if (doorTransform != null)
         {
             closedRotation = doorTransform.rotation;
             openRotation = doorTransform.rotation * Quaternion.Euler(0, openAngle, 0);
         }
 
-        // Matikan semua lampu di awal
         if (greenLight != null) greenLight.SetActive(false);
         if (redLight != null) redLight.SetActive(false);
 
         Debug.Log($"[TapExitCard] Script aktif di object: {gameObject.name}");
 
-        if (doorTransform == null)
-            Debug.LogWarning("[TapExitCard] DoorTransform belum di-assign (pintu opsional)");
-
-        // Pastikan collider benar
         Collider col = GetComponent<Collider>();
         if (col == null)
             Debug.LogError("[TapExitCard] ⚠️ Tidak ada Collider! Tambahkan Box Collider + centang Is Trigger");
@@ -81,7 +79,6 @@ public class TapExitCard : MonoBehaviour
         Debug.Log("[TapExitCard] Lampu direset ke OFF");
     }
 
-    // ✅ hanya cek slot aktif
     private bool CheckExitCardInInventory()
     {
         if (InventoryManager.instance == null)
@@ -116,20 +113,29 @@ public class TapExitCard : MonoBehaviour
             yield return null;
         }
 
-        Debug.Log("[TapExitCard] Pintu terbuka penuh, menunggu sebelum menutup...");
+        Debug.Log("[TapExitCard] Pintu terbuka penuh, menunggu sebelum transisi...");
+
         yield return new WaitForSeconds(2f);
 
-        // Tutup kembali
-        t = 0;
-        while (t < 1f)
+        // 🔹 Fade ke scene berikut
+        if (fadeController != null)
         {
-            t += Time.deltaTime * openSpeed;
-            doorTransform.rotation = Quaternion.Slerp(openRotation, closedRotation, t);
-            yield return null;
+            fadeController.FadeToNextScene(nextSceneName);
+        }
+        else
+        {
+            Debug.LogWarning("[TapExitCard] ⚠️ FadeController belum di-assign, transisi dilewati.");
         }
 
-        doorOpened = false;
-        Debug.Log("[TapExitCard] Pintu ditutup kembali.");
+        // (Opsional) kalau ingin pintu menutup setelah fade
+        // t = 0;
+        // while (t < 1f)
+        // {
+        //     t += Time.deltaTime * openSpeed;
+        //     doorTransform.rotation = Quaternion.Slerp(openRotation, closedRotation, t);
+        //     yield return null;
+        // }
+        // doorOpened = false;
     }
 
     private void OnTriggerEnter(Collider other)
