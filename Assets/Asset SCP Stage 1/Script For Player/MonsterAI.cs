@@ -1,250 +1,178 @@
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.SceneManagement; // <-- penting untuk restart scene
 
-[RequireComponent(typeof(NavMeshAgent))]
 public class MonsterAI : MonoBehaviour
 {
-    [Header("Patrol")]
+    [Header("Patrol Settings")]
     public Transform[] waypoints;
     public float waypointStopDistance = 0.3f;
-    public float waitAtWaypoint = 1.0f;
+    public float waitAtWaypoint = 1f;
 
     [Header("Movement Speeds")]
     public float patrolSpeed = 1.2f;
     public float chaseSpeed = 3.5f;
 
-    [Header("Detection")]
+    [Header("Detection Settings")]
     public Transform player;
     public float viewRadius = 8f;
-    [Range(0, 360)] public float viewAngle = 60f;
+    [Range(0, 360)]
+    public float viewAngle = 60f;
     public LayerMask playerLayer;
     public LayerMask obstacleMask;
-    public float timeToLosePlayer = 3.0f;
+    public float timeToLosePlayer = 3f;
 
-    [Header("Attack")]
+    [Header("Attack Settings")]
     public float attackRange = 1.5f;
     public float attackCooldown = 1.5f;
 
-    [Header("Animation (optional)")]
-    public Animator animator; // optional parameter animator
+    [Header("Scene Transition")]
+    public string youDiedScene = "You died";
+    public float fadeDelay = 0.5f;
 
-    NavMeshAgent agent;
-    int currentWaypoint = 0;
-    float waitTimer = 0f;
-    bool playerInSight = false;
-    float loseSightTimer = 0f;
-    float attackTimer = 0f;
+    [Header("Animation (Optional)")]
+    public Animator animator;
 
-    enum State { Patrol, Chasing, Searching }
-    State state = State.Patrol;
+    private NavMeshAgent agent;
+    private int currentWaypoint = 0;
+    private float waitTimer = 0f;
+    private bool playerInSight = false;
+    private float playerLostTimer = 0f;
+    private bool isAttacking = false;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        agent.autoBraking = false;
-
-        if (waypoints.Length == 0)
+        if (agent == null)
         {
-            Debug.LogWarning("❗ MonsterAI: Belum ada waypoint.");
-            agent.isStopped = true;
-            return;
+            agent = gameObject.AddComponent<NavMeshAgent>();
         }
 
-        agent.speed = patrolSpeed;
-        GotoNextWaypoint();
-        if (animator) animator.SetBool("isCrawling", true);
+        if (waypoints.Length > 0)
+            agent.SetDestination(waypoints[0].position);
     }
 
     void Update()
     {
-        if (player == null)
-        {
-            GameObject pgo = GameObject.FindGameObjectWithTag("Player");
-            if (pgo) player = pgo.transform;
-        }
-
-        playerInSight = CheckPlayerInSight();
-
-        switch (state)
-        {
-            case State.Patrol:
-                PatrolUpdate();
-                if (playerInSight) StartChasing();
-                break;
-
-            case State.Chasing:
-                ChaseUpdate();
-                break;
-
-            case State.Searching:
-                SearchUpdate();
-                break;
-        }
-
-        attackTimer -= Time.deltaTime;
-    }
-
-    #region Patrol
-    void PatrolUpdate()
-    {
-        if (agent.pathPending) return;
-
-        if (agent.remainingDistance <= waypointStopDistance)
-        {
-            if (waitTimer <= 0f)
-            {
-                waitTimer = waitAtWaypoint;
-                agent.isStopped = true;
-            }
-            else
-            {
-                waitTimer -= Time.deltaTime;
-                if (waitTimer <= 0f)
-                {
-                    GotoNextWaypoint();
-                    agent.isStopped = false;
-                }
-            }
-        }
-    }
-
-    void GotoNextWaypoint()
-    {
-        if (waypoints.Length == 0) return;
-        currentWaypoint = (currentWaypoint + 1) % waypoints.Length;
-        agent.speed = patrolSpeed;
-        agent.SetDestination(waypoints[currentWaypoint].position);
-    }
-    #endregion
-
-    #region Chasing
-    void StartChasing()
-    {
-        state = State.Chasing;
-        agent.isStopped = false;
-        agent.speed = chaseSpeed;
-        if (animator) animator.SetBool("isChasing", true);
-        loseSightTimer = timeToLosePlayer;
-    }
-
-    void ChaseUpdate()
-    {
         if (player == null) return;
 
-        agent.SetDestination(player.position);
-        float dist = Vector3.Distance(transform.position, player.position);
-
-        if (dist <= attackRange)
+        if (CanSeePlayer())
         {
-            agent.isStopped = true;
-            if (attackTimer <= 0f)
+            playerInSight = true;
+            playerLostTimer = 0f;
+        }
+        else if (playerInSight)
+        {
+            playerLostTimer += Time.deltaTime;
+            if (playerLostTimer >= timeToLosePlayer)
             {
-                DoAttack();
-                attackTimer = attackCooldown;
+                playerInSight = false;
+                playerLostTimer = 0f;
             }
-        }
-        else
-        {
-            agent.isStopped = false;
-        }
-
-        if (!playerInSight)
-        {
-            loseSightTimer -= Time.deltaTime;
-            if (loseSightTimer <= 0f)
-            {
-                state = State.Searching;
-                if (animator) animator.SetBool("isChasing", false);
-                agent.SetDestination(player.position);
-                agent.speed = patrolSpeed;
-            }
-        }
-        else
-        {
-            loseSightTimer = timeToLosePlayer;
-        }
-    }
-
-    void SearchUpdate()
-    {
-        if (!agent.pathPending && agent.remainingDistance <= waypointStopDistance)
-        {
-            state = State.Patrol;
-            GotoNextWaypoint();
-            if (animator) animator.SetBool("isChasing", false);
         }
 
         if (playerInSight)
         {
-            StartChasing();
+            ChasePlayer();
         }
-    }
-    #endregion
-
-    void DoAttack()
-    {
-        Debug.Log("💀 SCP menangkap player! Game Over!");
-        if (animator) animator.SetTrigger("isAttacking");
-
-        // 💥 Langsung kill player:
-        // 1️⃣ Disable movement player (kalau ada script movement)
-        MonoBehaviour movement = player.GetComponent<MonoBehaviour>();
-        if (movement != null) movement.enabled = false;
-
-        // 2️⃣ Tampilkan efek atau animasi
-        // (kamu bisa panggil GameOver UI di sini kalau punya)
-
-        // 3️⃣ Restart Scene setelah delay
-        StartCoroutine(RestartScene());
-    }
-
-    System.Collections.IEnumerator RestartScene()
-    {
-        yield return new WaitForSeconds(2f); // beri waktu animasi SCP menyerang
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
-    #region Detection
-    bool CheckPlayerInSight()
-    {
-        if (player == null) return false;
-
-        Vector3 dirToPlayer = player.position - transform.position;
-        float distToPlayer = dirToPlayer.magnitude;
-        if (distToPlayer > viewRadius) return false;
-
-        float angle = Vector3.Angle(transform.forward, dirToPlayer.normalized);
-        if (angle > viewAngle * 0.5f) return false;
-
-        // Raycast untuk line of sight
-        if (Physics.Raycast(transform.position + Vector3.up * 0.6f, dirToPlayer.normalized, out RaycastHit hit, viewRadius))
+        else
         {
-            if (hit.transform == player)
-                return true;
+            Patrol();
         }
+    }
 
+    bool CanSeePlayer()
+    {
+        Vector3 dirToPlayer = (player.position - transform.position).normalized;
+        if (Vector3.Distance(transform.position, player.position) <= viewRadius)
+        {
+            if (Vector3.Angle(transform.forward, dirToPlayer) < viewAngle / 2)
+            {
+                if (!Physics.Raycast(transform.position, dirToPlayer, out RaycastHit hit, viewRadius, obstacleMask))
+                {
+                    return true;
+                }
+            }
+        }
         return false;
     }
-    #endregion
 
-    #region Gizmos
+    void Patrol()
+    {
+        if (waypoints.Length == 0) return;
+
+        agent.speed = patrolSpeed;
+        if (!agent.pathPending && agent.remainingDistance < waypointStopDistance)
+        {
+            waitTimer += Time.deltaTime;
+            if (waitTimer >= waitAtWaypoint)
+            {
+                currentWaypoint = (currentWaypoint + 1) % waypoints.Length;
+                agent.SetDestination(waypoints[currentWaypoint].position);
+                waitTimer = 0f;
+            }
+        }
+
+        if (animator) animator.SetBool("isChasing", false);
+    }
+
+    void ChasePlayer()
+    {
+        if (player == null) return;
+        agent.speed = chaseSpeed;
+        agent.SetDestination(player.position);
+
+        if (animator) animator.SetBool("isChasing", true);
+
+        if (!isAttacking && Vector3.Distance(transform.position, player.position) <= attackRange)
+        {
+            StartCoroutine(DoAttack());
+        }
+    }
+
+    System.Collections.IEnumerator DoAttack()
+    {
+        isAttacking = true;
+        if (animator) animator.SetTrigger("attack");
+
+        yield return new WaitForSeconds(0.3f); // sedikit delay biar lebih natural
+
+        if (Vector3.Distance(transform.position, player.position) <= attackRange + 0.5f)
+        {
+            Debug.Log("💀 SCP menangkap player! Game Over!");
+
+            PlayerDeathEffect death = player.GetComponent<PlayerDeathEffect>();
+            if (death != null)
+            {
+                death.Die(); // langsung panggil mati
+            }
+        }
+
+        yield return new WaitForSeconds(attackCooldown);
+        isAttacking = false;
+    }
+
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+
+        Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, viewRadius);
 
-        Vector3 leftDir = DirFromAngle(-viewAngle / 2, false);
-        Vector3 rightDir = DirFromAngle(viewAngle / 2, false);
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(transform.position, transform.position + leftDir * viewRadius);
-        Gizmos.DrawLine(transform.position, transform.position + rightDir * viewRadius);
+        Vector3 viewAngleA = DirFromAngle(-viewAngle / 2, false);
+        Vector3 viewAngleB = DirFromAngle(viewAngle / 2, false);
+
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawLine(transform.position, transform.position + viewAngleA * viewRadius);
+        Gizmos.DrawLine(transform.position, transform.position + viewAngleB * viewRadius);
     }
 
-    Vector3 DirFromAngle(float angleDeg, bool global)
+    Vector3 DirFromAngle(float angleInDegrees, bool angleIsGlobal)
     {
-        if (!global) angleDeg += transform.eulerAngles.y;
-        return new Vector3(Mathf.Sin(angleDeg * Mathf.Deg2Rad), 0, Mathf.Cos(angleDeg * Mathf.Deg2Rad));
+        if (!angleIsGlobal)
+        {
+            angleInDegrees += transform.eulerAngles.y;
+        }
+        return new Vector3(Mathf.Sin(angleInDegrees * Mathf.Deg2Rad), 0, Mathf.Cos(angleInDegrees * Mathf.Deg2Rad));
     }
-    #endregion
 }

@@ -1,52 +1,56 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerDeathEffect : MonoBehaviour
 {
-    public float fallRotationDuration = 1f; // durasi jatuh
-    public Vector3 fallRotation = new Vector3(90, 0, 0); // posisi rebah saat mati
+    [Header("Death Settings")]
+    public string deathSceneName = "You died";
+    public float delayBeforeDeath = 1f; // waktu jeda sebelum pindah scene
+    public bool fadeOut = true;
+    public CanvasGroup fadeCanvas; // optional kalau mau efek fade
+
     private bool isDead = false;
-    private float elapsedTime = 0f;
-    private Quaternion startRotation;
-    private Quaternion targetRotation;
-    private Rigidbody rb;
 
-    void Start()
-    {
-        rb = GetComponent<Rigidbody>();
-        if (rb == null)
-            rb = gameObject.AddComponent<Rigidbody>();
-
-        rb.isKinematic = true; // normalnya player dikontrol manual
-        startRotation = transform.rotation;
-        targetRotation = Quaternion.Euler(fallRotation);
-    }
-
-    void Update()
-    {
-        if (isDead)
-        {
-            elapsedTime += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsedTime / fallRotationDuration);
-
-            // interpolasi rotasi jatuh
-            transform.rotation = Quaternion.Slerp(startRotation, targetRotation, t);
-
-            // setelah jatuh selesai, biar physics aktif
-            if (t >= 1f)
-            {
-                rb.isKinematic = false; // player bisa jatuh di lantai
-            }
-        }
-    }
-
-    // panggil ini saat kena musuh
     public void Die()
     {
         if (isDead) return;
-
         isDead = true;
-        elapsedTime = 0f;
-        startRotation = transform.rotation;
-        rb.isKinematic = true; // hentikan kontrol player
+
+        // Matikan semua kontrol player
+        CharacterController controller = GetComponent<CharacterController>();
+        if (controller) controller.enabled = false;
+
+        MonoBehaviour[] scripts = GetComponents<MonoBehaviour>();
+        foreach (var s in scripts)
+        {
+            if (s != this) s.enabled = false;
+        }
+
+        // Optional: fade out sebelum pindah scene
+        if (fadeOut && fadeCanvas != null)
+        {
+            StartCoroutine(FadeAndLoadScene());
+        }
+        else
+        {
+            Invoke(nameof(LoadDeathScene), delayBeforeDeath);
+        }
+    }
+
+    private System.Collections.IEnumerator FadeAndLoadScene()
+    {
+        float t = 0f;
+        while (t < 1f)
+        {
+            t += Time.deltaTime;
+            fadeCanvas.alpha = Mathf.Lerp(0, 1, t);
+            yield return null;
+        }
+        LoadDeathScene();
+    }
+
+    private void LoadDeathScene()
+    {
+        SceneManager.LoadScene(deathSceneName);
     }
 }
