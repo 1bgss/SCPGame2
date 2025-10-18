@@ -7,10 +7,11 @@ public class MonsterAI : MonoBehaviour
     public Transform[] waypoints;
     public float waypointStopDistance = 0.3f;
     public float waitAtWaypoint = 1f;
+    public float patrolSpeed = 2f; // Patrol lebih cepat
 
-    [Header("Movement Speeds")]
-    public float patrolSpeed = 1.2f;
-    public float chaseSpeed = 3.5f;
+    [Header("Chase Settings")]
+    public float chaseSpeed = 3.5f; // Kecepatan chase dasar
+    public float speedBoostMultiplier = 2f; // Max speed boost saat dekat player
 
     [Header("Detection Settings")]
     public Transform player;
@@ -24,7 +25,7 @@ public class MonsterAI : MonoBehaviour
     public float attackRange = 1.5f;
 
     [Header("Scene Transition")]
-    public string youDiedScene = "YouDied"; // pastikan sama di Build Settings
+    public string youDiedScene = "YouDied";
 
     [Header("Animation (Optional)")]
     public Animator animator;
@@ -100,6 +101,7 @@ public class MonsterAI : MonoBehaviour
         if (waypoints.Length == 0) return;
 
         agent.speed = patrolSpeed;
+
         if (!agent.pathPending && agent.remainingDistance < waypointStopDistance)
         {
             waitTimer += Time.deltaTime;
@@ -117,13 +119,19 @@ public class MonsterAI : MonoBehaviour
     void ChasePlayer()
     {
         if (player == null) return;
-        agent.speed = chaseSpeed;
+
+        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+
+        // Speed boost semakin dekat player
+        float speedMultiplier = 1f + (speedBoostMultiplier - 1f) * (1f - Mathf.Clamp01(distanceToPlayer / viewRadius));
+        agent.speed = chaseSpeed * speedMultiplier;
+
         agent.SetDestination(player.position);
 
         if (animator) animator.SetBool("isChasing", true);
 
-        // ❗ LANGSUNG MATI TANPA DELAY
-        if (Vector3.Distance(transform.position, player.position) <= attackRange)
+        // Instant kill
+        if (distanceToPlayer <= attackRange)
         {
             KillPlayerInstant();
         }
@@ -139,7 +147,6 @@ public class MonsterAI : MonoBehaviour
             death.Die();
         }
 
-        // Stop AI biar SCP gak terus ngejar
         if (agent) agent.isStopped = true;
         enabled = false;
     }
