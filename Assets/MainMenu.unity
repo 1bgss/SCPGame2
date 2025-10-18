@@ -854,6 +854,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57b82eb5fb857ce48bd0134200d7da08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpiritIconClick
+  fadeImage: {fileID: 1216355370}
+  fadeDuration: 3
   sceneToLoad: x
 --- !u!1 &1152055540
 GameObject:
@@ -906,7 +908,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57b82eb5fb857ce48bd0134200d7da08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpiritIconClick
-  sceneToLoad: 
+  fadeImage: {fileID: 0}
+  fadeDuration: 1
+  sceneToLoad: x
 --- !u!61 &1152055543
 BoxCollider2D:
   m_ObjectHideFlags: 0
