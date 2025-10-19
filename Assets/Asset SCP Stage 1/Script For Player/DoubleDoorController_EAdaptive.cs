@@ -13,6 +13,10 @@ public class DoubleDoorController_EAdaptive : MonoBehaviour
     public float interactDistance = 3f;
     public string playerTag = "Player";
 
+    [Header("Audio")]
+    public AudioSource audioSource; // Satu-satunya audio source
+    public AudioClip doorSoundClip; // Bunyi buka/tutup pintu
+
     private bool isOpen = false;
     private bool isMoving = false;
     private float closeTimer;
@@ -39,6 +43,10 @@ public class DoubleDoorController_EAdaptive : MonoBehaviour
         // Rotasi buka ke arah belakang (kebalikan)
         leftOpenBackwardRot = leftClosedRot * Quaternion.Euler(0, openAngle, 0);
         rightOpenBackwardRot = rightClosedRot * Quaternion.Euler(0, -openAngle, 0);
+
+        // AudioSource otomatis dibuat jika belum ada
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
     }
 
     void Update()
@@ -48,11 +56,8 @@ public class DoubleDoorController_EAdaptive : MonoBehaviour
             float distance = Vector3.Distance(player.position, transform.position);
             if (distance <= interactDistance && Input.GetKeyDown(KeyCode.E) && !isMoving)
             {
-                // Tentukan dari sisi mana player datang
                 Vector3 dirToPlayer = (player.position - transform.position).normalized;
                 float dot = Vector3.Dot(transform.forward, dirToPlayer);
-
-                // Jika dot > 0 berarti player di depan pintu, jika < 0 berarti di belakang
                 openDirectionForward = dot > 0;
                 ToggleDoor();
             }
@@ -72,6 +77,9 @@ public class DoubleDoorController_EAdaptive : MonoBehaviour
         isOpen = !isOpen;
         isMoving = true;
 
+        // Mainkan suara pintu
+        PlayDoorSound();
+
         if (isOpen)
             closeTimer = Time.time + autoCloseDelay;
     }
@@ -82,6 +90,8 @@ public class DoubleDoorController_EAdaptive : MonoBehaviour
         isOpen = true;
         isMoving = true;
         closeTimer = Time.time + autoCloseDelay;
+
+        PlayDoorSound();
     }
 
     public void CloseDoor()
@@ -89,6 +99,8 @@ public class DoubleDoorController_EAdaptive : MonoBehaviour
         if (!isOpen || isMoving) return;
         isOpen = false;
         isMoving = true;
+
+        PlayDoorSound();
     }
 
     private void MoveDoors()
@@ -99,20 +111,17 @@ public class DoubleDoorController_EAdaptive : MonoBehaviour
         {
             if (openDirectionForward)
             {
-                // Buka ke arah depan
                 targetLeft = leftOpenForwardRot;
                 targetRight = rightOpenForwardRot;
             }
             else
             {
-                // Buka ke arah belakang
                 targetLeft = leftOpenBackwardRot;
                 targetRight = rightOpenBackwardRot;
             }
         }
         else
         {
-            // Tutup kembali
             targetLeft = leftClosedRot;
             targetRight = rightClosedRot;
         }
@@ -125,6 +134,12 @@ public class DoubleDoorController_EAdaptive : MonoBehaviour
         {
             isMoving = false;
         }
+    }
+
+    void PlayDoorSound()
+    {
+        if (doorSoundClip != null && audioSource != null)
+            audioSource.PlayOneShot(doorSoundClip, 1f); // mainkan di atas clip lain jika ada
     }
 
     void OnDrawGizmosSelected()
