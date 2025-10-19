@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.UI;  // untuk teks UI
+using TMPro;  // pakai TextMeshPro
 
 public class DoorButton_Left : MonoBehaviour
 {
@@ -8,13 +8,17 @@ public class DoorButton_Left : MonoBehaviour
     public float interactDistance = 3f;
 
     [Header("UI Prompt")]
-    public Text promptText; // assign Text UI di Canvas
+    public TMP_Text promptText; // assign TMP_Text di Canvas
     private bool isPlayerNearby;
+
+    [Header("Audio Settings")]
+    public AudioSource audioSource;
+    public AudioClip openClip; // suara pintu terbuka
 
     void Start()
     {
         if (promptText != null)
-            promptText.enabled = false; // sembunyikan di awal
+            promptText.gameObject.SetActive(false); // sembunyikan di awal
     }
 
     void Update()
@@ -25,7 +29,7 @@ public class DoorButton_Left : MonoBehaviour
         isPlayerNearby = distance <= interactDistance;
 
         if (promptText != null)
-            promptText.enabled = isPlayerNearby;
+            promptText.gameObject.SetActive(isPlayerNearby);
 
         if (isPlayerNearby)
         {
@@ -33,7 +37,16 @@ public class DoorButton_Left : MonoBehaviour
                 promptText.text = "Press [E] to open/close the door";
 
             if (Input.GetKeyDown(KeyCode.E))
+            {
                 doorLeft.ToggleDoor();
+                PlayDoorSound();
+            }
         }
+    }
+
+    private void PlayDoorSound()
+    {
+        if (audioSource != null && openClip != null)
+            audioSource.PlayOneShot(openClip);
     }
 }

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using TMPro; // ✅ pakai TextMeshPro
 
 public class TapExitCard : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class TapExitCard : MonoBehaviour
 
     [Header("Pengaturan Pintu")]
     public float openAngle = 90f;
-    public bool invertRotation = false; // 🔹 bisa ubah arah buka
+    public bool invertRotation = false;
     public float openSpeed = 2f;
 
     [Header("Waktu Reset Lampu")]
@@ -20,6 +21,15 @@ public class TapExitCard : MonoBehaviour
     public penamanExitDoorFadeOke fadeController;
     public string nextSceneName = "SpiritIconToBeContinue";
 
+    [Header("Audio Settings")]
+    public AudioSource audioSource;
+    public AudioClip errorClip;      // 🔴 suara gagal
+    public AudioClip successClip;    // 🟢 suara berhasil
+    public AudioClip doorOpenClip;   // 🚪 suara pintu
+
+    [Header("UI")]
+    public TMP_Text interactText; // ✅ ubah ke TMP_Text
+
     private bool canTap = false;
     private bool doorOpened = false;
     private Quaternion closedRotation;
@@ -27,7 +37,6 @@ public class TapExitCard : MonoBehaviour
 
     void Start()
     {
-        // Simpan rotasi awal pintu (pakai localRotation agar sesuai pivot engsel)
         if (doorTransform != null)
         {
             closedRotation = doorTransform.localRotation;
@@ -35,11 +44,12 @@ public class TapExitCard : MonoBehaviour
             openRotation = closedRotation * Quaternion.Euler(0, finalAngle, 0);
         }
 
-        // Matikan lampu awal
         if (greenLight != null) greenLight.SetActive(false);
         if (redLight != null) redLight.SetActive(false);
 
-        // Pastikan collider ada dan IsTrigger
+        if (interactText != null)
+            interactText.gameObject.SetActive(false); // sembunyikan teks di awal
+
         Collider col = GetComponent<Collider>();
         if (col == null)
             Debug.LogError("[TapExitCard] ⚠️ Tidak ada Collider! Tambahkan Box Collider + centang Is Trigger");
@@ -58,20 +68,24 @@ public class TapExitCard : MonoBehaviour
 
             if (hasExitCard)
             {
-                // Lampu hijau ON
                 if (greenLight != null) greenLight.SetActive(true);
                 if (redLight != null) redLight.SetActive(false);
                 StartCoroutine(ResetLights());
+
+                if (audioSource != null && successClip != null)
+                    audioSource.PlayOneShot(successClip);
 
                 if (doorTransform != null && !doorOpened)
                     StartCoroutine(OpenDoor());
             }
             else
             {
-                // Lampu merah ON
                 if (redLight != null) redLight.SetActive(true);
                 if (greenLight != null) greenLight.SetActive(false);
                 StartCoroutine(ResetLights());
+
+                if (audioSource != null && errorClip != null)
+                    audioSource.PlayOneShot(errorClip);
             }
         }
     }
@@ -108,9 +122,9 @@ public class TapExitCard : MonoBehaviour
         doorOpened = true;
         float t = 0f;
 
-        Debug.Log("[TapExitCard] Membuka pintu...");
+        if (audioSource != null && doorOpenClip != null)
+            audioSource.PlayOneShot(doorOpenClip);
 
-        // 🔹 Animasi buka
         while (t < 1f)
         {
             t += Time.deltaTime * openSpeed;
@@ -118,20 +132,14 @@ public class TapExitCard : MonoBehaviour
             yield return null;
         }
 
-        yield return new WaitForSeconds(2f); // tunggu sebentar sebelum fade
+        yield return new WaitForSeconds(2f);
 
-        // 🔹 Fade ke scene berikut
         if (fadeController != null)
-        {
             fadeController.FadeToNextScene(nextSceneName);
-        }
         else
-        {
             Debug.LogWarning("[TapExitCard] ⚠️ FadeController belum di-assign.");
-        }
 
-        // 🔹 Tutup otomatis setelah fade
-        yield return new WaitForSeconds(3f); // waktu fade selesai dulu
+        yield return new WaitForSeconds(3f);
 
         t = 0f;
         while (t < 1f)
@@ -142,18 +150,28 @@ public class TapExitCard : MonoBehaviour
         }
 
         doorOpened = false;
-        Debug.Log("[TapExitCard] ✅ Pintu tertutup kembali");
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
+        {
             canTap = true;
+            if (interactText != null)
+            {
+                interactText.text = "Press E to open Exit Door";
+                interactText.gameObject.SetActive(true);
+            }
+        }
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
+        {
             canTap = false;
+            if (interactText != null)
+                interactText.gameObject.SetActive(false);
+        }
     }
 }
