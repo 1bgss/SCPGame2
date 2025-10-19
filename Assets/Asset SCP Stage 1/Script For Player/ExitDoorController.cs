@@ -8,6 +8,7 @@ public class ExitDoorController : MonoBehaviour
 
     [Header("Swing Door Settings")]
     public float openAngle = 90f;
+    public bool invertRotation = false; // 🔹 Bisa ubah arah bukaan
     public float openSpeed = 2f;
 
     [Header("Sliding Door Settings")]
@@ -25,17 +26,18 @@ public class ExitDoorController : MonoBehaviour
 
     void Start()
     {
-        // Simpan posisi dan rotasi awal
-        closedRot = transform.rotation;
-        closedPos = transform.position;
+        // Simpan posisi & rotasi awal (pakai local biar tetap benar kalau parent-nya dipindah)
+        closedRot = transform.localRotation;
+        closedPos = transform.localPosition;
 
-        openRot = closedRot * Quaternion.Euler(0, openAngle, 0);
+        // Hitung rotasi target (arah buka bisa dibalik)
+        float finalAngle = invertRotation ? -openAngle : openAngle;
+        openRot = closedRot * Quaternion.Euler(0, finalAngle, 0);
+
+        // Posisi pintu kalau sliding
         openPos = closedPos + slideOffset;
     }
 
-    /// <summary>
-    /// Dipanggil oleh TapExitCard ketika player berhasil tap kartu keluar.
-    /// </summary>
     public void OpenDoor()
     {
         if (!isOpen)
@@ -45,14 +47,14 @@ public class ExitDoorController : MonoBehaviour
     private IEnumerator OpenDoorCoroutine()
     {
         isOpen = true;
-
         float t = 0f;
+
         if (isSlidingDoor)
         {
             while (t < 1f)
             {
                 t += Time.deltaTime * slideSpeed;
-                transform.position = Vector3.Lerp(closedPos, openPos, t);
+                transform.localPosition = Vector3.Lerp(closedPos, openPos, t);
                 yield return null;
             }
         }
@@ -61,7 +63,7 @@ public class ExitDoorController : MonoBehaviour
             while (t < 1f)
             {
                 t += Time.deltaTime * openSpeed;
-                transform.rotation = Quaternion.Slerp(closedRot, openRot, t);
+                transform.localRotation = Quaternion.Slerp(closedRot, openRot, t);
                 yield return null;
             }
         }
@@ -73,12 +75,13 @@ public class ExitDoorController : MonoBehaviour
     private IEnumerator CloseDoorCoroutine()
     {
         float t = 0f;
+
         if (isSlidingDoor)
         {
             while (t < 1f)
             {
                 t += Time.deltaTime * slideSpeed;
-                transform.position = Vector3.Lerp(openPos, closedPos, t);
+                transform.localPosition = Vector3.Lerp(openPos, closedPos, t);
                 yield return null;
             }
         }
@@ -87,7 +90,7 @@ public class ExitDoorController : MonoBehaviour
             while (t < 1f)
             {
                 t += Time.deltaTime * openSpeed;
-                transform.rotation = Quaternion.Slerp(openRot, closedRot, t);
+                transform.localRotation = Quaternion.Slerp(openRot, closedRot, t);
                 yield return null;
             }
         }

@@ -7,15 +7,18 @@ public class TapExitCard : MonoBehaviour
     public GameObject greenLight;
     public GameObject redLight;
     public Transform doorTransform;
+
+    [Header("Pengaturan Pintu")]
     public float openAngle = 90f;
+    public bool invertRotation = false; // 🔹 bisa ubah arah buka
     public float openSpeed = 2f;
 
     [Header("Waktu Reset Lampu")]
     public float lightResetDelay = 2f;
 
     [Header("Scene Transition")]
-    public penamanExitDoorFadeOke fadeController; // drag Canvas Fade baru
-    public string nextSceneName = "SpiritIconToBeContinue"; // nama scene berikut
+    public penamanExitDoorFadeOke fadeController;
+    public string nextSceneName = "SpiritIconToBeContinue";
 
     private bool canTap = false;
     private bool doorOpened = false;
@@ -24,20 +27,19 @@ public class TapExitCard : MonoBehaviour
 
     void Start()
     {
-        // Set posisi awal dan posisi terbuka pintu
+        // Simpan rotasi awal pintu (pakai localRotation agar sesuai pivot engsel)
         if (doorTransform != null)
         {
-            closedRotation = doorTransform.rotation;
-            openRotation = doorTransform.rotation * Quaternion.Euler(0, openAngle, 0);
+            closedRotation = doorTransform.localRotation;
+            float finalAngle = invertRotation ? -openAngle : openAngle;
+            openRotation = closedRotation * Quaternion.Euler(0, finalAngle, 0);
         }
 
         // Matikan lampu awal
         if (greenLight != null) greenLight.SetActive(false);
         if (redLight != null) redLight.SetActive(false);
 
-        Debug.Log($"[TapExitCard] Script aktif di object: {gameObject.name}");
-
-        // Cek collider
+        // Pastikan collider ada dan IsTrigger
         Collider col = GetComponent<Collider>();
         if (col == null)
             Debug.LogError("[TapExitCard] ⚠️ Tidak ada Collider! Tambahkan Box Collider + centang Is Trigger");
@@ -49,11 +51,8 @@ public class TapExitCard : MonoBehaviour
     {
         if (!canTap) return;
 
-        // Tombol E untuk menggunakan kartu
         if (Input.GetKeyDown(KeyCode.E))
         {
-            Debug.Log("[TapExitCard] E ditekan di area trigger");
-
             bool hasExitCard = CheckExitCardInInventory();
             Debug.Log("[TapExitCard] Slot aktif berisi kartu? " + hasExitCard);
 
@@ -64,7 +63,6 @@ public class TapExitCard : MonoBehaviour
                 if (redLight != null) redLight.SetActive(false);
                 StartCoroutine(ResetLights());
 
-                // Buka pintu
                 if (doorTransform != null && !doorOpened)
                     StartCoroutine(OpenDoor());
             }
@@ -81,11 +79,8 @@ public class TapExitCard : MonoBehaviour
     private IEnumerator ResetLights()
     {
         yield return new WaitForSeconds(lightResetDelay);
-
         if (greenLight != null) greenLight.SetActive(false);
         if (redLight != null) redLight.SetActive(false);
-
-        Debug.Log("[TapExitCard] Lampu direset ke OFF");
     }
 
     private bool CheckExitCardInInventory()
@@ -105,64 +100,60 @@ public class TapExitCard : MonoBehaviour
 
         var activeObj = InventoryManager.instance.GetItemObjectAtSlot(active);
         bool hasCard = (activeObj != null && activeObj is ExitCardItem);
-
-        Debug.Log("[TapExitCard] Slot aktif (" + active + ") berisi ExitCard? " + hasCard);
         return hasCard;
     }
 
     private IEnumerator OpenDoor()
     {
         doorOpened = true;
+        float t = 0f;
+
         Debug.Log("[TapExitCard] Membuka pintu...");
 
-        float t = 0;
+        // 🔹 Animasi buka
         while (t < 1f)
         {
             t += Time.deltaTime * openSpeed;
-            doorTransform.rotation = Quaternion.Slerp(closedRotation, openRotation, t);
+            doorTransform.localRotation = Quaternion.Slerp(closedRotation, openRotation, t);
             yield return null;
         }
 
-        Debug.Log("[TapExitCard] Pintu terbuka penuh, menunggu sebelum transisi...");
+        yield return new WaitForSeconds(2f); // tunggu sebentar sebelum fade
 
-        yield return new WaitForSeconds(2f);
-
-        // 🔹 Fade ke scene berikut menggunakan penamanExitDoorFadeOke
+        // 🔹 Fade ke scene berikut
         if (fadeController != null)
         {
             fadeController.FadeToNextScene(nextSceneName);
         }
         else
         {
-            Debug.LogWarning("[TapExitCard] ⚠️ FadeController belum di-assign, transisi dilewati.");
+            Debug.LogWarning("[TapExitCard] ⚠️ FadeController belum di-assign.");
         }
 
-        // (Opsional) kalau ingin pintu menutup setelah fade
-        // t = 0;
-        // while (t < 1f)
-        // {
-        //     t += Time.deltaTime * openSpeed;
-        //     doorTransform.rotation = Quaternion.Slerp(openRotation, closedRotation, t);
-        //     yield return null;
-        // }
-        // doorOpened = false;
+        // 🔹 Tutup otomatis setelah fade
+        yield return new WaitForSeconds(3f); // waktu fade selesai dulu
+
+        t = 0f;
+        while (t < 1f)
+        {
+            t += Time.deltaTime * openSpeed;
+            doorTransform.localRotation = Quaternion.Slerp(openRotation, closedRotation, t);
+            yield return null;
+        }
+
+        doorOpened = false;
+        Debug.Log("[TapExitCard] ✅ Pintu tertutup kembali");
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
-        {
             canTap = true;
-            Debug.Log("[TapExitCard] ✅ Player MASUK area trigger");
-        }
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
-        {
             canTap = false;
-            Debug.Log("[TapExitCard] ⛔ Player KELUAR area trigger");
-        }
     }
 }
