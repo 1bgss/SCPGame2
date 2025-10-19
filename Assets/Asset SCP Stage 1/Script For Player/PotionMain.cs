@@ -10,6 +10,10 @@ public class PotionMain : MonoBehaviour
     public Sprite icon;
     public float effectDuration = 10f;
 
+    [Header("Audio")]
+    public AudioSource audioSource;   // AudioSource untuk efek minum
+    public AudioClip drinkClip;       // Clip suara minum potion
+
     private bool isActive = false;
     private bool isEffectActive = false;
 
@@ -17,6 +21,9 @@ public class PotionMain : MonoBehaviour
     {
         if (instance == null) instance = this;
         else Destroy(gameObject);
+
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
     }
 
     void Update()
@@ -36,6 +43,8 @@ public class PotionMain : MonoBehaviour
 
         if (playerPotionObject != null)
             playerPotionObject.SetActive(true);
+
+        PlayDrinkSound(); // suara minum potion
 
         StartCoroutine(ApplyStaminaEffect());
     }
@@ -69,5 +78,13 @@ public class PotionMain : MonoBehaviour
         isActive = false;
 
         Destroy(gameObject);
+    }
+
+    void PlayDrinkSound()
+    {
+        if (audioSource != null && drinkClip != null)
+        {
+            audioSource.PlayOneShot(drinkClip, 1f); // main di atas clip lain
+        }
     }
 }
