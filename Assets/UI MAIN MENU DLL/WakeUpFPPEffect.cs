@@ -6,7 +6,7 @@ public class WakeUpEffect : MonoBehaviour
     public Vector3 startRotation = new Vector3(90, 0, 0); // posisi rebahan
     public Vector3 endRotation = new Vector3(0, 0, 0);   // posisi berdiri
     private float elapsedTime = 0f;
-    private bool isWakingUp = true;
+    private bool isWakingUp = false; // awalnya false (belum bangun)
 
     void Start()
     {
@@ -24,9 +24,17 @@ public class WakeUpEffect : MonoBehaviour
             if (t >= 1f)
             {
                 isWakingUp = false;
-                // Di sini kamu bisa aktifkan kontrol player setelah bangun
+                Debug.Log("🧍 Pemain sudah bangun!");
                 // GetComponent<PlayerMovement>().enabled = true;
             }
         }
+    }
+
+    // 🔹 Dipanggil setelah tutorial selesai
+    public void StartWakeUp()
+    {
+        isWakingUp = true;
+        elapsedTime = 0f;
+        Debug.Log("💤 Mulai bangun setelah tutorial!");
     }
 }

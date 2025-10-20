@@ -12,6 +12,9 @@ public class TutorialScene : MonoBehaviour
     [Header("UI Gameplay yang mau disembunyikan")]
     public GameObject[] gameplayUI; // drag: InventoryCanvas, ObjectiveCanvas, StaminaCanvas, dll.
 
+    [Header("Player Camera")]
+    public WakeUpEffect wakeUpEffect; // drag kamera atau object yg ada script WakeUpEffect
+
     private CanvasGroup canvasGroup;
 
     void Start()
@@ -48,6 +51,10 @@ public class TutorialScene : MonoBehaviour
         foreach (GameObject ui in gameplayUI)
             ui.SetActive(true);
 
-        Debug.Log("✅ Tutorial selesai, UI gameplay aktif kembali!");
+        // 🔹 Mulai efek bangun
+        if (wakeUpEffect != null)
+            wakeUpEffect.StartWakeUp();
+
+        Debug.Log("✅ Tutorial selesai, UI gameplay aktif + efek bangun dimulai!");
     }
 }
