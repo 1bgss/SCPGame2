@@ -1,56 +1,42 @@
 using UnityEngine;
 using TMPro;
+using System.Collections;
 
 public class ExitCardItem : MonoBehaviour
 {
     [Header("Referensi Kartu")]
-    [Tooltip("Model kartu yang muncul di tangan player.")]
-    public GameObject mainCardObject;
-
-    [Tooltip("Icon kartu untuk inventory UI.")]
+    public GameObject mainCardObject; // model di tangan player
     public Sprite icon;
-
-    [Tooltip("Jarak maksimum agar bisa mengambil kartu.")]
     public float pickupRange = 2f;
 
-
     [Header("Suara Pickup")]
-    [Tooltip("Audio source untuk memutar suara pickup.")]
     public AudioSource audioSource;
-
-    [Tooltip("Suara yang dimainkan saat kartu diambil.")]
     public AudioClip pickupSound;
 
-
     [Header("UI Prompt")]
-    [Tooltip("Text TMP yang muncul saat pemain mendekati kartu.")]
     public TextMeshProUGUI promptText;
-
-    [Tooltip("Jarak maksimum agar teks prompt muncul (meter).")]
-    public float promptRange = 0.01f;  // ±1 cm
-
+    public float promptRange = 2f;
+    private float hideRange = 2.5f;
+    public float fadeDuration = 0.3f;
 
     [HideInInspector] public bool isHeld = false;
 
     private Transform player;
     private bool canTake = false;
-    private bool promptShown = false;
+    private bool promptVisible = false;
+    private Coroutine fadeRoutine;
     private Collider col;
 
-    // Posisi/rotasi/scale kartu di tangan player
     private readonly Vector3 handLocalPos = new(1.12f, -0.2554092f, 2.31f);
     private readonly Vector3 handLocalRot = new(-75.066f, -87.416f, 0f);
     private readonly Vector3 handLocalScale = new(0.09f, 0.085f, 0.051f);
 
-    // ---------------------------------------------------
-    // Lifecycle
-    // ---------------------------------------------------
     private void Awake()
     {
         col = GetComponent<Collider>();
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
 
-        // Sembunyikan kartu di tangan saat awal
+        // Setup kartu di tangan
         if (mainCardObject != null)
         {
             mainCardObject.SetActive(false);
@@ -64,66 +50,104 @@ public class ExitCardItem : MonoBehaviour
         if (audioSource == null)
             audioSource = gameObject.AddComponent<AudioSource>();
 
-        // Sembunyikan prompt text di awal
+        // Inisialisasi teks transparan (alpha = 0)
         if (promptText != null)
-            promptText.gameObject.SetActive(false);
+        {
+            Color c = promptText.color;
+            c.a = 0;
+            promptText.color = c;
+            promptText.gameObject.SetActive(true);
+        }
     }
 
     private void Update()
     {
+        // Kalau udah diambil (world hilang), jangan lanjut cek jarak
         if (player == null || isHeld) return;
 
         float distance = Vector3.Distance(player.position, transform.position);
 
-        // Tampilkan / sembunyikan prompt berdasarkan jarak
-        if (distance <= promptRange && !promptShown)
+        // --- fade prompt stabil ---
+        if (!promptVisible && distance <= promptRange)
         {
-            if (promptText != null)
-                promptText.gameObject.SetActive(true);
-
-            promptShown = true;
+            FadePrompt(true);
+            promptVisible = true;
         }
-        else if (distance > promptRange && promptShown)
+        else if (promptVisible && distance > hideRange)
         {
-            if (promptText != null)
-                promptText.gameObject.SetActive(false);
-
-            promptShown = false;
+            FadePrompt(false);
+            promptVisible = false;
         }
 
-        // Ambil kartu dengan tombol E
+        // --- pickup ---
         if (canTake && Input.GetKeyDown(KeyCode.E) && distance <= pickupRange && !isHeld)
             TakeCard();
     }
 
-    // ---------------------------------------------------
-    // Core Logic
-    // ---------------------------------------------------
+    private void FadePrompt(bool show)
+    {
+        if (fadeRoutine != null)
+            StopCoroutine(fadeRoutine);
+        fadeRoutine = StartCoroutine(FadeTextAlpha(show));
+    }
+
+    private IEnumerator FadeTextAlpha(bool fadeIn)
+    {
+        if (promptText == null) yield break;
+
+        float startAlpha = promptText.color.a;
+        float endAlpha = fadeIn ? 1f : 0f;
+        float elapsed = 0f;
+
+        while (elapsed < fadeDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / fadeDuration);
+            float newAlpha = Mathf.Lerp(startAlpha, endAlpha, t);
+
+            Color c = promptText.color;
+            c.a = newAlpha;
+            promptText.color = c;
+
+            yield return null;
+        }
+
+        Color finalColor = promptText.color;
+        finalColor.a = endAlpha;
+        promptText.color = finalColor;
+    }
+
     private void TakeCard()
     {
+        // Tambah ke inventory
         if (!InventoryManager.instance.AddItem(icon, this))
             return;
 
         isHeld = true;
-        gameObject.SetActive(false); // Hilangkan world object
 
-        if (promptText != null)
-            promptText.gameObject.SetActive(false); // Hide text permanen
+        // Sembunyikan prompt dulu biar fade-out rapi
+        FadePrompt(false);
 
-        // Update objective setelah ambil kartu
+        // Delay dikit sebelum disable object biar fade sempat kelar
+        StartCoroutine(DisableAfterFade());
+
+        // Update objective
         if (ObjectiveManager.instance != null)
             ObjectiveManager.instance.SetObjective("Go to the Exit Door");
 
-        // Mainkan suara pickup
+        // Suara pickup
         if (pickupSound != null && audioSource != null)
             audioSource.PlayOneShot(pickupSound, 1f);
 
         Debug.Log("✅ Exit Card diambil dan masuk inventory!");
     }
 
-    // ---------------------------------------------------
-    // Inventory Event Hooks
-    // ---------------------------------------------------
+    private IEnumerator DisableAfterFade()
+    {
+        yield return new WaitForSeconds(fadeDuration + 0.05f);
+        gameObject.SetActive(false); // baru disable setelah fade selesai
+    }
+
     public void ShowCardInHand()
     {
         if (mainCardObject != null)
@@ -139,15 +163,11 @@ public class ExitCardItem : MonoBehaviour
     public void UseCard()
     {
         if (!isHeld) return;
-
         Debug.Log("🟢 Exit Card digunakan!");
-        // Contoh: panggil fungsi pintu buka
+        // Misalnya panggil pintu buka
         // ExitGate.instance.OpenDoor();
     }
 
-    // ---------------------------------------------------
-    // Trigger Detection
-    // ---------------------------------------------------
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
