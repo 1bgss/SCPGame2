@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 public class DoubleDoorController_EAdaptive : MonoBehaviour
 {
@@ -14,8 +15,13 @@ public class DoubleDoorController_EAdaptive : MonoBehaviour
     public string playerTag = "Player";
 
     [Header("Audio")]
-    public AudioSource audioSource; // Satu-satunya audio source
-    public AudioClip doorSoundClip; // Bunyi buka/tutup pintu
+    public AudioSource audioSource;
+    public AudioClip doorOpenClip;
+    public AudioClip doorCloseClip;
+
+    [Header("UI Interaksi")]
+    public TextMeshProUGUI interactTextFront;
+    public TextMeshProUGUI interactTextBack;
 
     private bool isOpen = false;
     private bool isMoving = false;
@@ -23,9 +29,13 @@ public class DoubleDoorController_EAdaptive : MonoBehaviour
     private Transform player;
 
     private Quaternion leftClosedRot, rightClosedRot;
-    private Quaternion leftOpenForwardRot, rightOpenForwardRot;   // buka ke depan
-    private Quaternion leftOpenBackwardRot, rightOpenBackwardRot; // buka ke belakang
+    private Quaternion leftOpenForwardRot, rightOpenForwardRot;
+    private Quaternion leftOpenBackwardRot, rightOpenBackwardRot;
     private bool openDirectionForward = true;
+
+    private bool frontVisible = false;
+    private bool backVisible = false;
+    private float textHideThreshold;
 
     void Start()
     {
@@ -36,31 +46,39 @@ public class DoubleDoorController_EAdaptive : MonoBehaviour
         leftClosedRot = engselKiri.localRotation;
         rightClosedRot = engselKanan.localRotation;
 
-        // Rotasi buka ke arah depan (default)
         leftOpenForwardRot = leftClosedRot * Quaternion.Euler(0, -openAngle, 0);
         rightOpenForwardRot = rightClosedRot * Quaternion.Euler(0, openAngle, 0);
 
-        // Rotasi buka ke arah belakang (kebalikan)
         leftOpenBackwardRot = leftClosedRot * Quaternion.Euler(0, openAngle, 0);
         rightOpenBackwardRot = rightClosedRot * Quaternion.Euler(0, -openAngle, 0);
 
-        // AudioSource otomatis dibuat jika belum ada
         if (audioSource == null)
             audioSource = gameObject.AddComponent<AudioSource>();
+
+        textHideThreshold = interactDistance + 0.02f;
+
+        if (interactTextFront != null) interactTextFront.gameObject.SetActive(false);
+        if (interactTextBack != null) interactTextBack.gameObject.SetActive(false);
     }
 
     void Update()
     {
-        if (player != null)
+        if (player == null) return;
+
+        float distance = Vector3.Distance(player.position, transform.position);
+        Vector3 dirToPlayer = (player.position - transform.position).normalized;
+        float dot = Vector3.Dot(transform.forward, dirToPlayer);
+
+        bool isFront = dot > 0; // true kalau player di depan pintu
+
+        // 🔹 Tampilkan text depan/belakang sesuai posisi
+        HandleTextVisibility(distance, isFront);
+
+        // 🔹 Input interaksi
+        if (distance <= interactDistance && Input.GetKeyDown(KeyCode.E) && !isMoving)
         {
-            float distance = Vector3.Distance(player.position, transform.position);
-            if (distance <= interactDistance && Input.GetKeyDown(KeyCode.E) && !isMoving)
-            {
-                Vector3 dirToPlayer = (player.position - transform.position).normalized;
-                float dot = Vector3.Dot(transform.forward, dirToPlayer);
-                openDirectionForward = dot > 0;
-                ToggleDoor();
-            }
+            openDirectionForward = isFront;
+            ToggleDoor();
         }
 
         if (isOpen && Time.time >= closeTimer)
@@ -70,18 +88,74 @@ public class DoubleDoorController_EAdaptive : MonoBehaviour
             MoveDoors();
     }
 
+    private void HandleTextVisibility(float distance, bool isFront)
+    {
+        // kalau pintu terbuka, semua teks disembunyikan
+        if (isOpen)
+        {
+            HideAllTexts();
+            return;
+        }
+
+        // tampilkan teks depan/belakang sesuai posisi dan jarak
+        if (distance <= interactDistance)
+        {
+            if (isFront)
+            {
+                SetTextVisibility(interactTextFront, ref frontVisible, true);
+                SetTextVisibility(interactTextBack, ref backVisible, false);
+            }
+            else
+            {
+                SetTextVisibility(interactTextFront, ref frontVisible, false);
+                SetTextVisibility(interactTextBack, ref backVisible, true);
+            }
+        }
+        else if (distance > textHideThreshold)
+        {
+            HideAllTexts();
+        }
+    }
+
+    private void SetTextVisibility(TextMeshProUGUI text, ref bool state, bool visible)
+    {
+        if (text == null || state == visible) return;
+        text.gameObject.SetActive(visible);
+        state = visible;
+    }
+
+    private void HideAllTexts()
+    {
+        if (interactTextFront != null && frontVisible)
+        {
+            interactTextFront.gameObject.SetActive(false);
+            frontVisible = false;
+        }
+        if (interactTextBack != null && backVisible)
+        {
+            interactTextBack.gameObject.SetActive(false);
+            backVisible = false;
+        }
+    }
+
     public void ToggleDoor()
     {
         if (isMoving) return;
 
+        HideAllTexts(); // sembunyikan teks begitu pintu dibuka
+
         isOpen = !isOpen;
         isMoving = true;
 
-        // Mainkan suara pintu
-        PlayDoorSound();
-
         if (isOpen)
+        {
+            PlayDoorOpenSound();
             closeTimer = Time.time + autoCloseDelay;
+        }
+        else
+        {
+            PlayDoorCloseSound();
+        }
     }
 
     public void OpenDoor()
@@ -90,8 +164,7 @@ public class DoubleDoorController_EAdaptive : MonoBehaviour
         isOpen = true;
         isMoving = true;
         closeTimer = Time.time + autoCloseDelay;
-
-        PlayDoorSound();
+        PlayDoorOpenSound();
     }
 
     public void CloseDoor()
@@ -99,8 +172,7 @@ public class DoubleDoorController_EAdaptive : MonoBehaviour
         if (!isOpen || isMoving) return;
         isOpen = false;
         isMoving = true;
-
-        PlayDoorSound();
+        PlayDoorCloseSound();
     }
 
     private void MoveDoors()
@@ -136,10 +208,16 @@ public class DoubleDoorController_EAdaptive : MonoBehaviour
         }
     }
 
-    void PlayDoorSound()
+    void PlayDoorOpenSound()
     {
-        if (doorSoundClip != null && audioSource != null)
-            audioSource.PlayOneShot(doorSoundClip, 1f); // mainkan di atas clip lain jika ada
+        if (doorOpenClip != null && audioSource != null)
+            audioSource.PlayOneShot(doorOpenClip, 1f);
+    }
+
+    void PlayDoorCloseSound()
+    {
+        if (doorCloseClip != null && audioSource != null)
+            audioSource.PlayOneShot(doorCloseClip, 1f);
     }
 
     void OnDrawGizmosSelected()
