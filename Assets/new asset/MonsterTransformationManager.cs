@@ -3,13 +3,13 @@ using UnityEngine.UI;
 
 /*
 ═══════════════════════════════════════════════════════════════════════════════
-            MONSTER TRANSFORMATION - FIXED VERSION
+            MONSTER TRANSFORMATION - POSITION SYNC FIXED
 ═══════════════════════════════════════════════════════════════════════════════
 FIXES:
-- Monster start in SLEEP mode (not combat)
-- T key properly toggles back to human
-- Monster hidden when reverting to human
-- Proper camera switching
+✓ Player dan Monster posisi sinkron saat transform
+✓ Monster gerak = Player ikut gerak (posisi sinkron realtime)
+✓ Transform balik ke human tetap di posisi terakhir
+✓ Tidak ada "teleport" saat transform
 ═══════════════════════════════════════════════════════════════════════════════
 */
 
@@ -22,16 +22,23 @@ public class MonsterTransformationManager : MonoBehaviour
     public bool isMonster = false;
     
     [Header("=== DEBUG MODE ===")]
-    public bool showDebugInfo = true; // Toggle debug messages
+    public bool showDebugInfo = true;
     
     [Header("=== GAMEOBJECT REFERENCES ===")]
-    public GameObject humanModel;           // Player FPP hands/weapon
-    public GameObject monsterModel;         // Zombie full body
-    public THC1_ctrl monsterController;     // Zombie controller script
+    public GameObject humanModel;
+    public GameObject monsterModel;
+    public THC1_ctrl monsterController;
+    
+    // TAMBAHAN BARU: Reference ke Player GameObject
+    [Header("=== PLAYER REFERENCE (PENTING!) ===")]
+    [Tooltip("Drag Player GameObject (yang punya CharacterController) ke sini")]
+    public GameObject playerGameObject;
+    private CharacterController playerCharacterController;
+    private CharacterController monsterCharacterController;
     
     [Header("=== 2 CAMERA SYSTEM ===")]
-    public Camera humanCamera;              // Main Camera (FPP)
-    public Camera monsterCamera;            // Main Camera TPP
+    public Camera humanCamera;
+    public Camera monsterCamera;
     public float tppDistance = 4f;
     public float tppHeight = 2.5f;
     public float cameraSmoothSpeed = 10f;
@@ -81,7 +88,6 @@ public class MonsterTransformationManager : MonoBehaviour
     public InventoryToggle inventoryToggle;
     public InventoryInputManager inventoryInputManager;
     
-    // Private variables
     private float transformTimer = 0f;
     private Animator monsterAnimator;
     private float footstepTimer = 0f;
@@ -90,21 +96,42 @@ public class MonsterTransformationManager : MonoBehaviour
     
     void Start()
     {
-        // Get components
         if (monsterModel != null)
         {
             monsterAnimator = monsterModel.GetComponent<Animator>();
+            monsterCharacterController = monsterModel.GetComponent<CharacterController>();
+        }
+        
+        // Auto-find player GameObject jika belum di-set
+        if (playerGameObject == null)
+        {
+            // Cari object dengan tag "Player"
+            playerGameObject = GameObject.FindGameObjectWithTag("Player");
+            
+            // Atau cari PlayerMovement script di scene
+            if (playerGameObject == null && playerMovement != null)
+            {
+                playerGameObject = playerMovement.gameObject;
+            }
+        }
+        
+        if (playerGameObject != null)
+        {
+            playerCharacterController = playerGameObject.GetComponent<CharacterController>();
+            Debug.Log($"✅ Player GameObject found: {playerGameObject.name}");
+        }
+        else
+        {
+            Debug.LogError("❌ Player GameObject NOT FOUND! Please assign it in Inspector!");
         }
         
         if (playerStamina != null)
             humanMaxStamina = playerStamina.maxStamina;
         
-        // Initialize health
         currentHumanHealth = humanMaxHealth;
         currentMonsterHealth = monsterMaxHealth;
         currentMonsterStamina = monsterMaxStamina;
         
-        // Setup initial state - HUMAN MODE
         SetHumanMode();
         
         Debug.Log("╔════════════════════════════════════════════════════════╗");
@@ -128,11 +155,8 @@ public class MonsterTransformationManager : MonoBehaviour
     
     void Update()
     {
-        // CRITICAL: Always check for transformation key FIRST, regardless of mode
-        // This runs BEFORE any other script can consume the input
         HandleTransformationInput();
         
-        // Update systems based on current mode
         if (isMonster)
         {
             UpdateMonsterMode();
@@ -143,14 +167,44 @@ public class MonsterTransformationManager : MonoBehaviour
             }
             
             UpdateTPPCamera();
+            
+            // CRITICAL: SINKRONKAN POSISI PLAYER KE MONSTER SETIAP FRAME!
+            SyncPlayerToMonster();
         }
         
         UpdateHintText();
     }
     
+    // ==========================================
+    // POSITION SYNC SYSTEM - SOLUSI UTAMA!
+    // ==========================================
+    
+    void SyncPlayerToMonster()
+    {
+        if (playerGameObject == null || monsterModel == null) return;
+        
+        // Sinkronkan posisi Player ke Monster
+        // Jadi pas Monster gerak, Player ikut gerak di posisi yang sama
+        playerGameObject.transform.position = monsterModel.transform.position;
+        playerGameObject.transform.rotation = monsterModel.transform.rotation;
+    }
+    
+    void SyncMonsterToPlayer()
+    {
+        if (playerGameObject == null || monsterModel == null) return;
+        
+        // Sinkronkan posisi Monster ke Player
+        // Dipanggil saat transform jadi monster
+        monsterModel.transform.position = playerGameObject.transform.position;
+        monsterModel.transform.rotation = playerGameObject.transform.rotation;
+    }
+    
+    // ==========================================
+    // TRANSFORMATION INPUT HANDLER
+    // ==========================================
+    
     void HandleTransformationInput()
     {
-        // Check EVERY frame for transformation key
         if (Input.GetKeyDown(transformKey))
         {
             if (showDebugInfo)
@@ -173,7 +227,6 @@ public class MonsterTransformationManager : MonoBehaviour
             }
         }
         
-        // BACKUP KEY - K for emergency revert
         if (Input.GetKeyDown(KeyCode.K))
         {
             if (showDebugInfo)
@@ -189,10 +242,6 @@ public class MonsterTransformationManager : MonoBehaviour
             }
         }
     }
-    
-    // ==========================================
-    // TRANSFORMATION SYSTEM - TOGGLE
-    // ==========================================
     
     void ToggleTransformation()
     {
@@ -230,12 +279,14 @@ public class MonsterTransformationManager : MonoBehaviour
         
         Debug.Log("🐺 TRANSFORMING INTO MONSTER!");
         
+        // SYNC POSISI SEBELUM TRANSFORM
+        SyncMonsterToPlayer();
+        
         ConvertHealthToMonster();
         currentMonsterStamina = monsterMaxStamina;
         
         SetMonsterMode();
         
-        // Play transform sound
         if (monsterAudioSource != null)
         {
             if (transformSound != null)
@@ -248,7 +299,6 @@ public class MonsterTransformationManager : MonoBehaviour
             }
         }
         
-        // Allow input setelah transform selesai
         Invoke("FinishTransformation", 0.5f);
     }
     
@@ -266,7 +316,19 @@ public class MonsterTransformationManager : MonoBehaviour
             Debug.Log("╚════════════════════════════════════════════════════════╝");
         }
         
-        // Set flags IMMEDIATELY
+        // SYNC POSISI PLAYER KE MONSTER SEBELUM REVERT
+        // Ini penting! Supaya player muncul di posisi terakhir monster
+        if (playerGameObject != null && monsterModel != null)
+        {
+            playerGameObject.transform.position = monsterModel.transform.position;
+            playerGameObject.transform.rotation = monsterModel.transform.rotation;
+            
+            if (showDebugInfo)
+            {
+                Debug.Log($"[SYNC] Player position set to: {monsterModel.transform.position}");
+            }
+        }
+        
         bool wasMonster = isMonster;
         isMonster = false;
         isDead = false;
@@ -283,13 +345,11 @@ public class MonsterTransformationManager : MonoBehaviour
         SetHumanMode();
         transformTimer = 0f;
         
-        // Play revert sound
         if (monsterAudioSource != null && revertSound != null)
         {
             monsterAudioSource.PlayOneShot(revertSound);
         }
         
-        // Allow input setelah revert selesai
         Invoke("FinishTransformation", 0.5f);
         
         if (showDebugInfo)
@@ -311,13 +371,11 @@ public class MonsterTransformationManager : MonoBehaviour
                 transformTimerText.text = "Transform: " + Mathf.CeilToInt(transformTimer) + "s";
             }
             
-            // Warning saat waktunya hampir habis
             if (transformTimer <= 5f && transformTimer > 4f)
             {
                 if (showDebugInfo) Debug.Log("⚠️ Transform ending in 5 seconds! (Press T to revert manually)");
             }
             
-            // AUTO REVERT saat timer habis
             if (transformTimer <= 0)
             {
                 if (showDebugInfo)
@@ -356,10 +414,6 @@ public class MonsterTransformationManager : MonoBehaviour
         }
     }
     
-    // ==========================================
-    // HEALTH CONVERSION
-    // ==========================================
-    
     void ConvertHealthToMonster()
     {
         float healthPercentage = currentHumanHealth / humanMaxHealth;
@@ -376,10 +430,6 @@ public class MonsterTransformationManager : MonoBehaviour
         Debug.Log($"💚 Health: {currentMonsterHealth} → {currentHumanHealth}");
     }
     
-    // ==========================================
-    // MODE SWITCHING - FIXED VERSION
-    // ==========================================
-    
     void SetHumanMode()
     {
         if (showDebugInfo)
@@ -389,22 +439,18 @@ public class MonsterTransformationManager : MonoBehaviour
             Debug.Log("╚════════════════════════════════════════════════════════╝");
         }
         
-        // ========== MODELS ==========
         if (humanModel != null)
         {
             humanModel.SetActive(true);
             if (showDebugInfo) Debug.Log("✅ Human Model → ACTIVE");
         }
-        else if (showDebugInfo) Debug.LogWarning("⚠️ Human Model reference is NULL!");
         
         if (monsterModel != null)
         {
             monsterModel.SetActive(false);
             if (showDebugInfo) Debug.Log("❌ Monster Model → HIDDEN");
         }
-        else if (showDebugInfo) Debug.LogWarning("⚠️ Monster Model reference is NULL!");
         
-        // ========== CAMERAS ==========
         if (humanCamera != null)
         {
             humanCamera.gameObject.SetActive(true);
@@ -412,7 +458,6 @@ public class MonsterTransformationManager : MonoBehaviour
             humanCamera.tag = "MainCamera";
             if (showDebugInfo) Debug.Log("✅ FPP Camera → ACTIVE");
         }
-        else if (showDebugInfo) Debug.LogWarning("⚠️ Human Camera reference is NULL!");
         
         if (monsterCamera != null)
         {
@@ -421,14 +466,11 @@ public class MonsterTransformationManager : MonoBehaviour
             monsterCamera.tag = "Untagged";
             if (showDebugInfo) Debug.Log("❌ TPP Camera → INACTIVE");
         }
-        else if (showDebugInfo) Debug.LogWarning("⚠️ Monster Camera reference is NULL!");
         
-        // ========== UI ==========
         if (humanUI != null) humanUI.SetActive(true);
         if (monsterUI != null) monsterUI.SetActive(false);
         if (inventoryPanel != null) inventoryPanel.SetActive(true);
         
-        // ========== PLAYER SCRIPTS ==========
         if (playerMovement != null) 
         {
             playerMovement.enabled = true;
@@ -437,14 +479,12 @@ public class MonsterTransformationManager : MonoBehaviour
         if (inventoryToggle != null) inventoryToggle.enabled = true;
         if (inventoryInputManager != null) inventoryInputManager.enabled = true;
         
-        // ========== MONSTER SCRIPTS ==========
         if (monsterController != null)
         {
             monsterController.enabled = false;
             if (showDebugInfo) Debug.Log("❌ Monster Controller → DISABLED");
         }
         
-        // Restore stamina
         if (playerStamina != null)
         {
             playerStamina.maxStamina = humanMaxStamina;
@@ -465,7 +505,6 @@ public class MonsterTransformationManager : MonoBehaviour
     {
         Debug.Log("=== SETTING MONSTER MODE ===");
         
-        // ========== MODELS ==========
         if (humanModel != null)
         {
             humanModel.SetActive(false);
@@ -478,7 +517,6 @@ public class MonsterTransformationManager : MonoBehaviour
             Debug.Log("✅ Monster Model ON");
         }
         
-        // ========== CAMERAS ==========
         if (humanCamera != null)
         {
             humanCamera.gameObject.SetActive(false);
@@ -495,12 +533,10 @@ public class MonsterTransformationManager : MonoBehaviour
             Debug.Log("✅ TPP Camera ON");
         }
         
-        // ========== UI ==========
         if (humanUI != null) humanUI.SetActive(false);
         if (monsterUI != null) monsterUI.SetActive(true);
         if (inventoryPanel != null) inventoryPanel.SetActive(false);
         
-        // ========== PLAYER SCRIPTS - DISABLE ALL ==========
         if (playerMovement != null) 
         {
             playerMovement.enabled = false;
@@ -509,17 +545,15 @@ public class MonsterTransformationManager : MonoBehaviour
         if (inventoryToggle != null) inventoryToggle.enabled = false;
         if (inventoryInputManager != null) inventoryInputManager.enabled = false;
         
-        // ========== MONSTER SCRIPTS ==========
         if (monsterController != null)
         {
             monsterController.enabled = true;
             Debug.Log("✅ Monster Controller ON");
             
-            // PERBAIKAN: Set ke SLEEP MODE dulu, bukan combat!
             if (monsterAnimator != null)
             {
-                monsterAnimator.SetInteger("battle", 3); // 3 = SLEEP MODE
-                monsterAnimator.SetInteger("moving", 0); // Idle
+                monsterAnimator.SetInteger("battle", 3);
+                monsterAnimator.SetInteger("moving", 0);
                 Debug.Log("✅ Monster set to SLEEP MODE (battle=3, moving=0)");
                 Debug.Log("   Press 1 or 2 to wake up to Combat Mode");
             }
@@ -532,10 +566,6 @@ public class MonsterTransformationManager : MonoBehaviour
         Debug.Log("✅ === MONSTER MODE ACTIVE ===");
         Debug.Log("   Current Controls: Press 1/2 for Combat, 3 for Crawl, 4 for Sleep");
     }
-    
-    // ==========================================
-    // TPP CAMERA FOLLOW SYSTEM
-    // ==========================================
     
     void UpdateTPPCamera()
     {
@@ -554,10 +584,6 @@ public class MonsterTransformationManager : MonoBehaviour
         Vector3 lookTarget = monsterModel.transform.position + Vector3.up * 1.5f;
         monsterCamera.transform.LookAt(lookTarget);
     }
-    
-    // ==========================================
-    // MONSTER MODE UPDATES
-    // ==========================================
     
     void UpdateMonsterMode()
     {
@@ -622,10 +648,6 @@ public class MonsterTransformationManager : MonoBehaviour
         }
     }
     
-    // ==========================================
-    // AUDIO SYSTEM
-    // ==========================================
-    
     void HandleMonsterFootsteps()
     {
         if (monsterController == null || monsterAudioSource == null) return;
@@ -673,10 +695,6 @@ public class MonsterTransformationManager : MonoBehaviour
             monsterAudioSource.PlayOneShot(clip);
         }
     }
-    
-    // ==========================================
-    // COMBAT SYSTEM
-    // ==========================================
     
     public void MonsterAttack(bool isUltimate = false)
     {
@@ -742,10 +760,6 @@ public class MonsterTransformationManager : MonoBehaviour
         EndTransformation();
     }
     
-    // ==========================================
-    // PUBLIC ACCESSORS
-    // ==========================================
-    
     public bool IsMonsterMode()
     {
         return isMonster;
@@ -783,3 +797,28 @@ public class MonsterTransformationManager : MonoBehaviour
     }
 }
 
+/*
+═══════════════════════════════════════════════════════════════════════════════
+                        CARA SETUP DI INSPECTOR
+═══════════════════════════════════════════════════════════════════════════════
+
+1. DRAG REFERENCES:
+   ✓ Player GameObject → ke field "Player Game Object" (PENTING!)
+   ✓ Monster Model → ke field "Monster Model"
+   ✓ Human Model → ke field "Human Model"
+
+2. HIERARCHY STRUCTURE:
+   - Player (CharacterController)
+     └─ [Human Model/Weapon/FPP Hands]
+   
+   - hor_mon_1.1 (CharacterController + THC1_ctrl)
+     └─ [Monster 3D Model]
+
+3. CARA KERJA:
+   ✓ Saat jadi Monster → Player position sync ke Monster realtime
+   ✓ Saat Monster gerak → Player ikut gerak (invisible, posisi sama)
+   ✓ Saat revert ke Human → Player muncul di posisi terakhir Monster
+   ✓ TIDAK ADA TELEPORT! Semua smooth!
+
+═══════════════════════════════════════════════════════════════════════════════
+*/
